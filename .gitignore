@@ -1,7 +1,7 @@
 # Ignore everything in public/
 public/*
 venv/*
-.dh-diag/*
+.dh-diag
 
 # Un-ignore public/docs/
 !public/docs/build/
