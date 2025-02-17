@@ -1,0 +1,6 @@
+# Ignore everything in public/
+public/*
+venv/*
+
+# Un-ignore public/docs/
+!public/docs/
