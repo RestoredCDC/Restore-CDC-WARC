@@ -8,7 +8,7 @@ def fix_mismatched_tags(input_file):
 
     :param input_file: filename to be processed
     :type input_file: list[str]
-    :return: The ingredients list.
+    :return: Content with matched tags
     :rtype: list[str]
 
     """
@@ -27,8 +27,8 @@ def process_html(input_file, output_file):
     :type input_file: list[str]
     :param output_file: file to write
     :type output_file: list[str]
-    :return: The ingredients list.
-    :rtype: list[str]
+    :return: None
+    :rtype: None
 
     """
     try:
@@ -55,8 +55,6 @@ def process_html(input_file, output_file):
                     head.remove(element)
         else:
             print("Warning: No <head> tag found.")
-
-
         
         headers = root.findall(".//header")
         for header in headers:
@@ -86,7 +84,7 @@ def process_html(input_file, output_file):
 
         for a_tag in root.findall(".//a"):
             href = a_tag.get("href")
-            if href and "www.cdc.gov" in href:
+            if href and "cdc.gov" in href:
                 new_href = href.replace("cdc.gov", "OriginalCDCMirror.org")
                 a_tag.set("href", new_href)
 
