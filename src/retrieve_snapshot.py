@@ -35,7 +35,7 @@ def get_warc_url(cdx_url):
 
         if closest_snapshot:
             # Extract the WARC URL and timestamp
-            warc_url = closest_snapshot[2]
+            warc_url = closest_snapshot[1]
             timestamp = closest_snapshot[0]
             logging.info(f"Found closest snapshot: {warc_url} for timestamp {timestamp}")
             return warc_url

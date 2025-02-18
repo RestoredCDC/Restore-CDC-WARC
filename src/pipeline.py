@@ -29,8 +29,8 @@ def main():
 
     # Change this to match your actual CSV file name
     create_cdc_tree(selected_config['csv_file'], selected_config['output_base'])
-    extraction_processing(selected_config['extraction_input_folder'], selected_config['extraction_output_folder'])
     process_cdc_urls(selected_config['csv_file'], selected_config['output_base']) #retrieve snapshots
+    extraction_processing(selected_config['extraction_input_folder'], selected_config['extraction_output_folder'])
     process_directory(selected_config['extraction_output_folder'], selected_config['extraction_output_folder']) #process html files
 
 

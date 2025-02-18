@@ -23951,3 +23951,93 @@
 2025-02-18 15:20:02,955 - INFO - Created directory: ../public/abes/data
 2025-02-18 15:20:02,956 - INFO - Created directory: ../public/about/advisory-committee-director
 2025-02-18 15:20:02,956 - INFO - Directory structure creation completed.
+2025-02-18 17:01:01,397 - INFO - Successfully loaded 7 URLs from ../data/url_lists/test_urls.csv
+2025-02-18 17:01:01,398 - INFO - Starting URL processing...
+2025-02-18 17:01:01,398 - INFO - Total unique directory paths found: 7
+2025-02-18 17:01:01,398 - INFO - Created directory: ../public/abcs
+2025-02-18 17:01:01,398 - INFO - Created directory: ../public/abcs/about
+2025-02-18 17:01:01,398 - INFO - Created directory: ../public/abcs/es
+2025-02-18 17:01:01,398 - INFO - Created directory: ../public/abes
+2025-02-18 17:01:01,398 - INFO - Created directory: ../public/abes/about
+2025-02-18 17:01:01,398 - INFO - Created directory: ../public/abes/data
+2025-02-18 17:01:01,399 - INFO - Created directory: ../public/about/advisory-committee-director
+2025-02-18 17:01:01,399 - INFO - Directory structure creation completed.
+2025-02-18 17:01:43,368 - INFO - Successfully loaded 7 URLs from ../data/url_lists/test_urls.csv
+2025-02-18 17:01:43,369 - INFO - Starting URL processing...
+2025-02-18 17:01:43,369 - INFO - Total unique directory paths found: 7
+2025-02-18 17:01:43,369 - INFO - Created directory: ../public/abcs
+2025-02-18 17:01:43,369 - INFO - Created directory: ../public/abcs/about
+2025-02-18 17:01:43,369 - INFO - Created directory: ../public/abcs/es
+2025-02-18 17:01:43,369 - INFO - Created directory: ../public/abes
+2025-02-18 17:01:43,369 - INFO - Created directory: ../public/abes/about
+2025-02-18 17:01:43,370 - INFO - Created directory: ../public/abes/data
+2025-02-18 17:01:43,370 - INFO - Created directory: ../public/about/advisory-committee-director
+2025-02-18 17:01:43,370 - INFO - Directory structure creation completed.
+2025-02-18 17:04:56,368 - INFO - Successfully loaded 7 URLs from ../data/url_lists/test_urls.csv
+2025-02-18 17:04:56,368 - INFO - Starting URL processing...
+2025-02-18 17:04:56,368 - INFO - Total unique directory paths found: 7
+2025-02-18 17:04:56,368 - INFO - Created directory: ../public/abcs
+2025-02-18 17:04:56,368 - INFO - Created directory: ../public/abcs/about
+2025-02-18 17:04:56,368 - INFO - Created directory: ../public/abcs/es
+2025-02-18 17:04:56,369 - INFO - Created directory: ../public/abes
+2025-02-18 17:04:56,369 - INFO - Created directory: ../public/abes/about
+2025-02-18 17:04:56,369 - INFO - Created directory: ../public/abes/data
+2025-02-18 17:04:56,369 - INFO - Created directory: ../public/about/advisory-committee-director
+2025-02-18 17:04:56,369 - INFO - Directory structure creation completed.
+2025-02-18 17:04:57,232 - INFO - Found closest snapshot: None for timestamp 20250115092605
+2025-02-18 17:05:02,653 - ERROR - No snapshots found before the target date.
+2025-02-18 17:05:03,879 - INFO - Found closest snapshot: None for timestamp 20250103220317
+2025-02-18 17:05:14,627 - INFO - Found closest snapshot: None for timestamp 20241219175904
+2025-02-18 17:05:15,602 - INFO - Found closest snapshot: None for timestamp 20250116040455
+2025-02-18 17:05:29,784 - INFO - Found closest snapshot: None for timestamp 20241228191613
+2025-02-18 17:05:31,535 - INFO - Found closest snapshot: None for timestamp 20250112234327
+2025-02-18 17:06:32,526 - INFO - Successfully loaded 7 URLs from ../data/url_lists/test_urls.csv
+2025-02-18 17:06:32,527 - INFO - Starting URL processing...
+2025-02-18 17:06:32,528 - INFO - Total unique directory paths found: 7
+2025-02-18 17:06:32,528 - INFO - Created directory: ../public/abcs
+2025-02-18 17:06:32,529 - INFO - Created directory: ../public/abcs/about
+2025-02-18 17:06:32,529 - INFO - Created directory: ../public/abcs/es
+2025-02-18 17:06:32,529 - INFO - Created directory: ../public/abes
+2025-02-18 17:06:32,529 - INFO - Created directory: ../public/abes/about
+2025-02-18 17:06:32,529 - INFO - Created directory: ../public/abes/data
+2025-02-18 17:06:32,530 - INFO - Created directory: ../public/about/advisory-committee-director
+2025-02-18 17:06:32,530 - INFO - Directory structure creation completed.
+2025-02-18 17:09:35,163 - INFO - Found closest snapshot: None for timestamp 20250115092605
+2025-02-18 17:10:47,955 - INFO - Successfully loaded 7 URLs from ../data/url_lists/test_urls.csv
+2025-02-18 17:10:47,956 - INFO - Starting URL processing...
+2025-02-18 17:10:47,956 - INFO - Total unique directory paths found: 7
+2025-02-18 17:10:47,956 - INFO - Created directory: ../public/abcs
+2025-02-18 17:10:47,956 - INFO - Created directory: ../public/abcs/about
+2025-02-18 17:10:47,956 - INFO - Created directory: ../public/abcs/es
+2025-02-18 17:10:47,956 - INFO - Created directory: ../public/abes
+2025-02-18 17:10:47,957 - INFO - Created directory: ../public/abes/about
+2025-02-18 17:10:47,957 - INFO - Created directory: ../public/abes/data
+2025-02-18 17:10:47,957 - INFO - Created directory: ../public/about/advisory-committee-director
+2025-02-18 17:10:47,957 - INFO - Directory structure creation completed.
+2025-02-18 17:11:09,595 - INFO - Found closest snapshot: https://www.cdc.gov/abcs/about/index.html for timestamp 20250115092605
+2025-02-18 17:11:20,032 - INFO - WARC saved to ../public/warcs/_abcs_about_index.html.warc.gz
+2025-02-18 17:11:44,009 - INFO - Successfully loaded 7 URLs from ../data/url_lists/test_urls.csv
+2025-02-18 17:11:44,010 - INFO - Starting URL processing...
+2025-02-18 17:11:44,010 - INFO - Total unique directory paths found: 7
+2025-02-18 17:11:44,011 - INFO - Created directory: ../public/abcs
+2025-02-18 17:11:44,011 - INFO - Created directory: ../public/abcs/about
+2025-02-18 17:11:44,011 - INFO - Created directory: ../public/abcs/es
+2025-02-18 17:11:44,011 - INFO - Created directory: ../public/abes
+2025-02-18 17:11:44,011 - INFO - Created directory: ../public/abes/about
+2025-02-18 17:11:44,011 - INFO - Created directory: ../public/abes/data
+2025-02-18 17:11:44,011 - INFO - Created directory: ../public/about/advisory-committee-director
+2025-02-18 17:11:44,011 - INFO - Directory structure creation completed.
+2025-02-18 17:11:48,999 - INFO - Found closest snapshot: https://www.cdc.gov/abcs/about/index.html for timestamp 20250115092605
+2025-02-18 17:11:52,982 - INFO - WARC saved to ../public/warcs/_abcs_about_index.html.warc.gz
+2025-02-18 17:18:52,325 - INFO - Successfully loaded 7 URLs from ../data/url_lists/test_urls.csv
+2025-02-18 17:18:52,325 - INFO - Starting URL processing...
+2025-02-18 17:18:52,326 - INFO - Total unique directory paths found: 7
+2025-02-18 17:18:52,326 - INFO - Created directory: ../public/abcs
+2025-02-18 17:18:52,326 - INFO - Created directory: ../public/abcs/about
+2025-02-18 17:18:52,326 - INFO - Created directory: ../public/abcs/es
+2025-02-18 17:18:52,326 - INFO - Created directory: ../public/abes
+2025-02-18 17:18:52,326 - INFO - Created directory: ../public/abes/about
+2025-02-18 17:18:52,326 - INFO - Created directory: ../public/abes/data
+2025-02-18 17:18:52,326 - INFO - Created directory: ../public/about/advisory-committee-director
+2025-02-18 17:18:52,326 - INFO - Directory structure creation completed.
+2025-02-18 17:19:01,704 - INFO - Found closest snapshot: https://www.cdc.gov/abcs/about/index.html for timestamp 20250115092605
