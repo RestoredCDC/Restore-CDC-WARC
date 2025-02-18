@@ -26,6 +26,8 @@ PROGRESS
 #. began writing code to retrieve all snapshots from URL list
 	* snapshot had to have timestamp between 20241105 and 20250119
 	* snapshot had to be closest to 20250119
+	* retrieve_snapshot.py is where I got to this evening (2/17)
+	* have not had a fully successful test yet
 #. I have started processing codes as follows:
 	* extraction_processing.py was my first crack at WARC extraction code
 	* process_html.py was my first crack at a script that would accomplish the following:
