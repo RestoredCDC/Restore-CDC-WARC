@@ -1,0 +1,11 @@
+2025-02-17 16:05:42,627 - INFO - Successfully loaded 7 URLs from test_urls.csv
+2025-02-17 16:05:42,627 - INFO - Starting URL processing...
+2025-02-17 16:05:42,627 - INFO - Total unique directory paths found: 7
+2025-02-17 16:05:42,628 - INFO - Created directory: ../public/abcs
+2025-02-17 16:05:42,628 - INFO - Created directory: ../public/abcs/about
+2025-02-17 16:05:42,628 - INFO - Created directory: ../public/abcs/es
+2025-02-17 16:05:42,628 - INFO - Created directory: ../public/abes
+2025-02-17 16:05:42,628 - INFO - Created directory: ../public/abes/about
+2025-02-17 16:05:42,628 - INFO - Created directory: ../public/abes/data
+2025-02-17 16:05:42,628 - INFO - Created directory: ../public/about/advisory-committee-director
+2025-02-17 16:05:42,628 - INFO - Directory structure creation completed.
