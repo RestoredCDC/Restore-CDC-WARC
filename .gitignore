@@ -5,3 +5,6 @@ venv/*
 
 # Un-ignore public/docs/
 !public/docs/build/
+
+# ignore binary files
+**/__pycache__/

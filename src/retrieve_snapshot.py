@@ -4,12 +4,13 @@ import logging
 from datetime import datetime
 import csv
 import warcio
+from constants import TARGET_DATE
+
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Define the target date (01/19/2025)
-TARGET_DATE = datetime(2025, 1, 19)
 
 def get_warc_url(cdx_url):
     """Query the CDX API to get the closest WARC file URL before or on the target date."""
@@ -119,11 +120,3 @@ def process_cdc_urls(csv_filename, base_dir):
 
                 # Extract components from the WARC file
                 extract_warc_components(warc_save_path, base_dir)
-
-
-# Example usage
-CSV_FILENAME = 'test_urls.csv'
-BASE_DIR = '../public'  # This is where your directory structure starts
-
-# Process the URLs
-process_cdc_urls(CSV_FILENAME, BASE_DIR)

@@ -1,4 +1,4 @@
-The purpose of this file is to document the steps taken to date.
+# The purpose of this file is to document the steps taken to date.
 
 ######
 SERVER
@@ -37,4 +37,3 @@ PROGRESS
 			* any <meta that had a "name" property equal to "cdc:last_published"
 		#. replace text of any URL containing cdc.gov with OriginalCDCMirror.org
 		#. strip the <header> tags and content from the page
-                #. add div at top with disclaimer
