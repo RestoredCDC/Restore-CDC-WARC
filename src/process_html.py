@@ -104,9 +104,3 @@ def process_directory(input_dir, output_dir):
         if os.path.isfile(input_file) and filename.endswith(".html"):
             output_file = os.path.join(output_dir, filename)
             process_html(input_file, output_file)
-
-# Example usage:
-input_directory = "../public"   # Source directory
-output_directory = "../public/processed"  # Destination directory
-
-process_directory(input_directory, output_directory)
