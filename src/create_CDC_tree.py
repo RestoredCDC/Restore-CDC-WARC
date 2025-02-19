@@ -9,7 +9,7 @@ logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s",
     handlers=[
         logging.StreamHandler(),  # Log to console
-        logging.FileHandler("create_cdc_structure.log")  # Log to file
+        logging.FileHandler("../logs/create_cdc_structure.log")  # Log to file
     ]
 )
 
@@ -65,12 +65,9 @@ def process_urls(url_list, output_base):
 
     logging.info("Directory structure creation completed.")
 
-if __name__ == "__main__":
-    # Change this to match your actual CSV file name
-    csv_file = "CDC_html_URLs_from_sitemap_data_-_20241201.csv"
-    #"test_urls.csv"
-    output_base = "../public/" 
-
+def create_cdc_tree(csv_file, output_base):
+    """Main function to create the CDC directory tree from URLs in a CSV file.
+    """
     try:
         urls = read_urls_from_csv(csv_file)
         if urls:
