@@ -8,3 +8,6 @@ venv/*
 
 # ignore binary files
 **/__pycache__/
+
+# ignore logs
+logs/*

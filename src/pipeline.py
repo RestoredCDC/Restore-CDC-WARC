@@ -1,5 +1,5 @@
 import argparse
-from utils.config_loader import load_config
+from config_loader import load_config
 from create_CDC_tree import create_cdc_tree
 from extraction_processing import extraction_processing
 from retrieve_snapshot import process_cdc_urls
