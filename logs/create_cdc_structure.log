@@ -24041,3 +24041,28 @@
 2025-02-18 17:18:52,326 - INFO - Created directory: ../public/about/advisory-committee-director
 2025-02-18 17:18:52,326 - INFO - Directory structure creation completed.
 2025-02-18 17:19:01,704 - INFO - Found closest snapshot: https://www.cdc.gov/abcs/about/index.html for timestamp 20250115092605
+2025-02-19 19:59:56,339 - INFO - Successfully loaded 7 URLs from ../data/url_lists/test_urls.csv
+2025-02-19 19:59:56,340 - INFO - Starting URL processing...
+2025-02-19 19:59:56,340 - INFO - Total unique directory paths found: 7
+2025-02-19 19:59:56,340 - INFO - Created directory: ../public/abcs
+2025-02-19 19:59:56,340 - INFO - Created directory: ../public/abcs/about
+2025-02-19 19:59:56,340 - INFO - Created directory: ../public/abcs/es
+2025-02-19 19:59:56,341 - INFO - Created directory: ../public/abes
+2025-02-19 19:59:56,341 - INFO - Created directory: ../public/abes/about
+2025-02-19 19:59:56,341 - INFO - Created directory: ../public/abes/data
+2025-02-19 19:59:56,341 - INFO - Created directory: ../public/about/advisory-committee-director
+2025-02-19 19:59:56,341 - INFO - Directory structure creation completed.
+2025-02-19 19:59:56,980 - INFO - Found closest snapshot: https://www.cdc.gov/abcs/about/index.html for timestamp 20250115092605
+2025-02-19 19:59:56,981 - INFO - get_more: fetching cdx from https://web.archive.org/cdx/search/cdx
+2025-02-19 19:59:58,290 - INFO - Considering extracting url: https://www.cdc.gov/abcs/about/index.html with timestamp 20250115092605
+2025-02-19 20:00:04,884 - ERROR - WARC versions other than 1.0 are not correctly supported yet
+2025-02-19 20:00:04,885 - INFO - opening new warc file ../public/warcs/_abcs_about_index.html.warc.gz-test-000001.extracted.warc.gz
+2025-02-19 20:00:04,891 - INFO - Wrote warc for https://www.cdc.gov/abcs/about/index.html
+2025-02-19 20:00:05,676 - ERROR - No snapshots found before the target date.
+2025-02-19 20:00:05,677 - INFO - get_more: fetching cdx from https://web.archive.org/cdx/search/cdx
+2025-02-19 20:00:21,668 - INFO - Found closest snapshot: https://www.cdc.gov/abcs/site.html for timestamp 20250103220317
+2025-02-19 20:00:21,670 - INFO - get_more: fetching cdx from https://web.archive.org/cdx/search/cdx
+2025-02-19 20:00:31,818 - INFO - Considering extracting url: https://www.cdc.gov/abcs/site.html with timestamp 20250103220317
+2025-02-19 20:00:39,695 - ERROR - WARC versions other than 1.0 are not correctly supported yet
+2025-02-19 20:00:39,697 - INFO - opening new warc file ../public/warcs/_abcs_site.html.warc.gz-test-000001.extracted.warc.gz
+2025-02-19 20:00:39,701 - INFO - Wrote warc for https://www.cdc.gov/abcs/site.html

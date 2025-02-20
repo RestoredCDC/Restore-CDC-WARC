@@ -5,7 +5,7 @@ from datetime import datetime
 import csv
 import warcio
 from constants import TARGET_DATE
-
+import cdx_toolkit
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -46,6 +46,41 @@ def get_warc_url(cdx_url):
         logging.error(f"Failed to query CDX API. HTTP status code: {response.status_code}")
         return None
 
+def get_best_date_for_url(cdx_url):
+    """Query the CDX API to get the closest WARC file URL before or on the target date."""
+    # Format the CDX API URL for the query
+    cdx_api_url = f"https://web.archive.org/cdx/search/cdx?url={cdx_url}&output=json&fl=timestamp,original,warc_url&limit=25000"
+
+    # Send the request to the CDX API
+    response = requests.get(cdx_api_url)
+
+    if response.status_code == 200:
+        data = response.json()
+
+        # Filter snapshots that are on or before the target date
+        closest_snapshot = None
+        for entry in data[1:]:
+            timestamp = entry[0]
+            snapshot_date = datetime.strptime(timestamp, "%Y%m%d%H%M%S")
+            if snapshot_date <= TARGET_DATE:
+                closest_snapshot = entry
+            else:
+                break  # Since the data is sorted by date, no need to check further snapshots
+
+        if closest_snapshot:
+            # Extract the WARC URL and timestamp
+            url = closest_snapshot[1]
+            timestamp = closest_snapshot[0]
+            logging.info(f"Found closest snapshot: {url} for timestamp {timestamp}")
+            return timestamp
+        else:
+            logging.error("No snapshots found before the target date.")
+            return None
+    else:
+        logging.error(f"Failed to query CDX API. HTTP status code: {response.status_code}")
+        return None
+
+
 
 def download_warc(warc_url, save_path):
     """Download a WARC file from the Wayback Machine."""
@@ -56,7 +91,7 @@ def download_warc(warc_url, save_path):
     if response.status_code == 200:
         # Ensure the directory exists
         os.makedirs(os.path.dirname(save_path), exist_ok=True)
-        
+
         # Save the WARC file
         with open(save_path, 'wb') as warc_file:
             for chunk in response.iter_content(chunk_size=8192):
@@ -100,6 +135,37 @@ def extract_warc_components(warc_path, save_dir):
                     img_file.write(payload)
                 logging.info(f"Saved image file: {relative_path}")
 
+def download_warc_cdx_toolkit(url, best_timestamp, warc_save_path):
+    """
+    Adapted from example: https://github.com/cocrawler/cdx_toolkit/blob/main/examples/iter-and-warc.py
+    :param url:
+    :return:
+    """
+    cdx = cdx_toolkit.CDXFetcher(source='ia')
+    warcinfo = {
+        'software': 'pypi_cdx_toolkit iter-and-warc example',
+        'isPartOf': 'CDC', # 'EXAMPLE-COMMONCRAWL',
+        'description': 'warc extraction',
+        'format': 'WARC file version 1.0',
+    }
+    writer = cdx_toolkit.warc.get_writer(warc_save_path, 'test', warcinfo, warc_version='1.1')
+    for obj in cdx.iter(url, limit=10):
+        url = obj['url']
+        status = obj['status']
+        timestamp = obj['timestamp']
+        if timestamp == best_timestamp:
+            logging.info(f'Considering extracting url: {url} with timestamp {timestamp}')
+            if status != '200':
+                logging.info('Skipping because status was {}, not 200'.format(status))
+                continue
+            try:
+                record = obj.fetch_warc_record()
+            except RuntimeError:
+                logging.info('Skipping capture for RuntimeError 404: %s %s', url, timestamp)
+                continue
+            writer.write_record(record)
+            logging.info(f'Wrote warc for {url}')
+
 
 def process_cdc_urls(csv_filename, base_dir):
     """Process a list of URLs, download the closest WARC snapshot, and extract resources."""
@@ -108,15 +174,13 @@ def process_cdc_urls(csv_filename, base_dir):
         for row in reader:
             url = row[0].strip()
 
-            # Get the WARC URL for the closest snapshot before or on 01/19/2025
-            warc_url = get_warc_url(url)
-            if warc_url:
-                # Define the path where to save the WARC file
-                warc_filename = url.replace('https://www.cdc.gov', '').replace('/', '_') + '.warc.gz'
-                warc_save_path = os.path.join(base_dir, 'warcs', warc_filename)
+            # Define the path where to save the WARC file
+            warc_filename = url.replace('https://www.cdc.gov', '').replace('/', '_') + '.warc.gz'
+            warc_save_path = os.path.join(base_dir, 'warcs', warc_filename)
 
-                # Download the WARC file
-                download_warc(warc_url, warc_save_path)
+            # Download the WARC file for the best timestamp
+            timestamp = get_best_date_for_url(url)
+            download_warc_cdx_toolkit(url, timestamp, warc_save_path)
 
-                # Extract components from the WARC file
-                extract_warc_components(warc_save_path, base_dir)
+            # Extract components from the WARC file
+            # extract_warc_components(warc_save_path, base_dir)
