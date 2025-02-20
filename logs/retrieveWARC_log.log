@@ -1,9 +1,0 @@
-2025-02-17 16:57:58,848 - INFO - Processing: https://www.cdc.gov/abcs/about/index.html
-2025-02-17 16:57:58,848 - INFO - Searching archive for: https://www.cdc.gov/abcs/about/index.html
-2025-02-17 16:57:58,849 - DEBUG - Starting new HTTPS connection (1): web.archive.org:443
-2025-02-17 16:57:59,465 - DEBUG - https://web.archive.org:443 "GET /cdx/search/cdx?gzip=false&url=https%3A%2F%2Fwww.cdc.gov%2Fabcs%2Fabout%2Findex.html&showResumeKey=true&limit=25000 HTTP/1.1" 200 None
-2025-02-17 16:57:59,468 - INFO - Found snapshot: https://web.archive.org/web/20250115092605/https://www.cdc.gov/abcs/about/index.html (20250115092605)
-2025-02-17 16:57:59,468 - INFO - Downloading WARC from: https://web.archive.org/web/20250115092605/https://www.cdc.gov/abcs/about/index.html
-2025-02-17 16:57:59,469 - DEBUG - Starting new HTTPS connection (1): web.archive.org:443
-2025-02-17 16:58:00,349 - DEBUG - https://web.archive.org:443 "GET /web/20250115092605/https://www.cdc.gov/abcs/about/index.html HTTP/1.1" 200 None
-2025-02-17 16:58:00,350 - INFO - WARC saved to ../public/www.cdc.gov/abcs/about/index.html

@@ -57,6 +57,8 @@ def get_warc_url(cdx_url):
 def get_best_date_for_url(cdx_url):
     """Query the CDX API to get the closest WARC file URL before or on the target date."""
     # Format the CDX API URL for the query
+    # TODO A limit of 25,000 could make a tough bug to find; if we run this in the future, and web.archive.org has made
+    #  more than that many backups, we could end up not seeing the right version.
     cdx_api_url = f"https://web.archive.org/cdx/search/cdx?url={cdx_url}&output=json&fl=timestamp,original,warc_url&limit=25000"
 
     # Send the request to the CDX API
@@ -166,9 +168,13 @@ def download_warc_cdx_toolkit(url, best_timestamp, warc_save_path):
         "description": "warc extraction",
         "format": "WARC file version 1.0",
     }
+
+    # TODO verify the conventions of warc info, and the conventions of using subprefix (set to "test" right now).
     writer = cdx_toolkit.warc.get_writer(
         warc_save_path, "test", warcinfo, warc_version="1.1"
     )
+
+    #TODO Possible loss of data if it goes beyond this limit; ideally there's a method to check the size of cdx but there isn't always
     for obj in cdx.iter(url, limit=10):
         timestamp = obj["timestamp"]
         if timestamp == best_timestamp:
