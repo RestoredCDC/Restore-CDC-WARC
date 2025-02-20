@@ -8,9 +8,12 @@ from constants import TARGET_DATE
 import cdx_toolkit
 
 # Set up logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 # Define the target date (01/19/2025)
+
 
 def get_warc_url(cdx_url):
     """Query the CDX API to get the closest WARC file URL before or on the target date."""
@@ -37,14 +40,19 @@ def get_warc_url(cdx_url):
             # Extract the WARC URL and timestamp
             warc_url = closest_snapshot[1]
             timestamp = closest_snapshot[0]
-            logging.info(f"Found closest snapshot: {warc_url} for timestamp {timestamp}")
+            logging.info(
+                f"Found closest snapshot: {warc_url} for timestamp {timestamp}"
+            )
             return warc_url
         else:
             logging.error("No snapshots found before the target date.")
             return None
     else:
-        logging.error(f"Failed to query CDX API. HTTP status code: {response.status_code}")
+        logging.error(
+            f"Failed to query CDX API. HTTP status code: {response.status_code}"
+        )
         return None
+
 
 def get_best_date_for_url(cdx_url):
     """Query the CDX API to get the closest WARC file URL before or on the target date."""
@@ -77,9 +85,10 @@ def get_best_date_for_url(cdx_url):
             logging.error("No snapshots found before the target date.")
             return None
     else:
-        logging.error(f"Failed to query CDX API. HTTP status code: {response.status_code}")
+        logging.error(
+            f"Failed to query CDX API. HTTP status code: {response.status_code}"
+        )
         return None
-
 
 
 def download_warc(warc_url, save_path):
@@ -93,47 +102,56 @@ def download_warc(warc_url, save_path):
         os.makedirs(os.path.dirname(save_path), exist_ok=True)
 
         # Save the WARC file
-        with open(save_path, 'wb') as warc_file:
+        with open(save_path, "wb") as warc_file:
             for chunk in response.iter_content(chunk_size=8192):
                 warc_file.write(chunk)
         logging.info(f"WARC saved to {save_path}")
     else:
-        logging.error(f"Failed to download WARC file from {warc_url} (status code: {response.status_code})")
+        logging.error(
+            f"Failed to download WARC file from {warc_url} (status code: {response.status_code})"
+        )
 
 
 def extract_warc_components(warc_path, save_dir):
     """Extract HTML, CSS, and images from a WARC file and save them in the correct directory."""
-    with open(warc_path, 'rb') as warc_file:
+    with open(warc_path, "rb") as warc_file:
         archive = warcio.archiveiterator.ArchiveIterator(warc_file)
 
         for record in archive:
-            url = record.rec_headers.get_header('WARC-Target-URI')
-            content_type = record.http_headers.get_header('Content-Type')
+            url = record.rec_headers.get_header("WARC-Target-URI")
+            content_type = record.http_headers.get_header("Content-Type")
             payload = record.content
 
             # Save HTML files
-            if 'html' in content_type:
-                relative_path = os.path.join(save_dir, url.lstrip('https://www.cdc.gov'))
+            if "html" in content_type:
+                relative_path = os.path.join(
+                    save_dir, url.lstrip("https://www.cdc.gov")
+                )
                 os.makedirs(os.path.dirname(relative_path), exist_ok=True)
-                with open(relative_path, 'wb') as html_file:
+                with open(relative_path, "wb") as html_file:
                     html_file.write(payload)
                 logging.info(f"Saved HTML file: {relative_path}")
 
             # Save CSS files
-            elif 'css' in content_type:
-                relative_path = os.path.join(save_dir, url.lstrip('https://www.cdc.gov'))
+            elif "css" in content_type:
+                relative_path = os.path.join(
+                    save_dir, url.lstrip("https://www.cdc.gov")
+                )
                 os.makedirs(os.path.dirname(relative_path), exist_ok=True)
-                with open(relative_path, 'wb') as css_file:
+                with open(relative_path, "wb") as css_file:
                     css_file.write(payload)
                 logging.info(f"Saved CSS file: {relative_path}")
 
             # Save image files
-            elif 'image' in content_type:
-                relative_path = os.path.join(save_dir, url.lstrip('https://www.cdc.gov'))
+            elif "image" in content_type:
+                relative_path = os.path.join(
+                    save_dir, url.lstrip("https://www.cdc.gov")
+                )
                 os.makedirs(os.path.dirname(relative_path), exist_ok=True)
-                with open(relative_path, 'wb') as img_file:
+                with open(relative_path, "wb") as img_file:
                     img_file.write(payload)
                 logging.info(f"Saved image file: {relative_path}")
+
 
 def download_warc_cdx_toolkit(url, best_timestamp, warc_save_path):
     """
@@ -141,42 +159,50 @@ def download_warc_cdx_toolkit(url, best_timestamp, warc_save_path):
     :param url:
     :return:
     """
-    cdx = cdx_toolkit.CDXFetcher(source='ia')
+    cdx = cdx_toolkit.CDXFetcher(source="ia")
     warcinfo = {
-        'software': 'pypi_cdx_toolkit iter-and-warc example',
-        'isPartOf': 'CDC', # 'EXAMPLE-COMMONCRAWL',
-        'description': 'warc extraction',
-        'format': 'WARC file version 1.0',
+        "software": "pypi_cdx_toolkit iter-and-warc example",
+        "isPartOf": "CDC",  # 'EXAMPLE-COMMONCRAWL',
+        "description": "warc extraction",
+        "format": "WARC file version 1.0",
     }
-    writer = cdx_toolkit.warc.get_writer(warc_save_path, 'test', warcinfo, warc_version='1.1')
+    writer = cdx_toolkit.warc.get_writer(
+        warc_save_path, "test", warcinfo, warc_version="1.1"
+    )
     for obj in cdx.iter(url, limit=10):
-        url = obj['url']
-        status = obj['status']
-        timestamp = obj['timestamp']
+        timestamp = obj["timestamp"]
         if timestamp == best_timestamp:
-            logging.info(f'Considering extracting url: {url} with timestamp {timestamp}')
-            if status != '200':
-                logging.info('Skipping because status was {}, not 200'.format(status))
+            url = obj["url"]
+            status = obj["status"]
+            logging.info(
+                f"Considering extracting url: {url} with timestamp {timestamp}"
+            )
+            if status != "200":
+                logging.info("Skipping because status was {}, not 200".format(status))
                 continue
             try:
                 record = obj.fetch_warc_record()
             except RuntimeError:
-                logging.info('Skipping capture for RuntimeError 404: %s %s', url, timestamp)
+                logging.info(
+                    "Skipping capture for RuntimeError 404: %s %s", url, timestamp
+                )
                 continue
             writer.write_record(record)
-            logging.info(f'Wrote warc for {url}')
+            logging.info(f"Wrote warc for {url}")
 
 
 def process_cdc_urls(csv_filename, base_dir):
     """Process a list of URLs, download the closest WARC snapshot, and extract resources."""
-    with open(csv_filename, 'r') as csv_file:
+    with open(csv_filename, "r") as csv_file:
         reader = csv.reader(csv_file)
         for row in reader:
             url = row[0].strip()
 
             # Define the path where to save the WARC file
-            warc_filename = url.replace('https://www.cdc.gov', '').replace('/', '_') + '.warc.gz'
-            warc_save_path = os.path.join(base_dir, 'warcs', warc_filename)
+            warc_filename = (
+                url.replace("https://www.cdc.gov", "").replace("/", "_") + ".warc.gz"
+            )
+            warc_save_path = os.path.join(base_dir, "warcs", warc_filename)
 
             # Download the WARC file for the best timestamp
             timestamp = get_best_date_for_url(url)

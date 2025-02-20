@@ -24066,3 +24066,159 @@
 2025-02-19 20:00:39,695 - ERROR - WARC versions other than 1.0 are not correctly supported yet
 2025-02-19 20:00:39,697 - INFO - opening new warc file ../public/warcs/_abcs_site.html.warc.gz-test-000001.extracted.warc.gz
 2025-02-19 20:00:39,701 - INFO - Wrote warc for https://www.cdc.gov/abcs/site.html
+2025-02-19 20:30:27,813 - INFO - Successfully loaded 7 URLs from ../data/url_lists/test_urls.csv
+2025-02-19 20:30:27,813 - INFO - Starting URL processing...
+2025-02-19 20:30:27,814 - INFO - Total unique directory paths found: 7
+2025-02-19 20:30:27,814 - INFO - Created directory: ../public/abcs
+2025-02-19 20:30:27,814 - INFO - Created directory: ../public/abcs/about
+2025-02-19 20:30:27,814 - INFO - Created directory: ../public/abcs/es
+2025-02-19 20:30:27,815 - INFO - Created directory: ../public/abes
+2025-02-19 20:30:27,815 - INFO - Created directory: ../public/abes/about
+2025-02-19 20:30:27,815 - INFO - Created directory: ../public/abes/data
+2025-02-19 20:30:27,815 - INFO - Created directory: ../public/about/advisory-committee-director
+2025-02-19 20:30:27,816 - INFO - Directory structure creation completed.
+2025-02-19 20:30:32,416 - INFO - Found closest snapshot: https://www.cdc.gov/abcs/about/index.html for timestamp 20250115092605
+2025-02-19 20:30:32,417 - INFO - get_more: fetching cdx from https://web.archive.org/cdx/search/cdx
+2025-02-19 20:30:47,319 - INFO - Considering extracting url: https://www.cdc.gov/abcs/about/index.html with timestamp 20250115092605
+2025-02-19 20:30:53,711 - ERROR - WARC versions other than 1.0 are not correctly supported yet
+2025-02-19 20:30:53,712 - INFO - opening new warc file ../public/warcs\_abcs_about_index.html.warc.gz-test-000000.extracted.warc.gz
+2025-02-19 20:30:53,724 - INFO - Wrote warc for https://www.cdc.gov/abcs/about/index.html
+2025-02-19 20:31:10,135 - ERROR - No snapshots found before the target date.
+2025-02-19 20:31:10,136 - INFO - get_more: fetching cdx from https://web.archive.org/cdx/search/cdx
+2025-02-19 20:31:16,634 - INFO - Found closest snapshot: https://www.cdc.gov/abcs/site.html for timestamp 20250103220317
+2025-02-19 20:31:16,634 - INFO - get_more: fetching cdx from https://web.archive.org/cdx/search/cdx
+2025-02-19 20:31:23,801 - INFO - Considering extracting url: https://www.cdc.gov/abcs/site.html with timestamp 20250103220317
+2025-02-19 20:31:30,219 - ERROR - WARC versions other than 1.0 are not correctly supported yet
+2025-02-19 20:31:30,220 - INFO - opening new warc file ../public/warcs\_abcs_site.html.warc.gz-test-000000.extracted.warc.gz
+2025-02-19 20:31:30,231 - INFO - Wrote warc for https://www.cdc.gov/abcs/site.html
+2025-02-19 20:31:38,493 - INFO - Found closest snapshot: https://www.cdc.gov/abes/about/index.html for timestamp 20241219175904
+2025-02-19 20:31:38,494 - INFO - get_more: fetching cdx from https://web.archive.org/cdx/search/cdx
+2025-02-19 20:31:39,101 - INFO - Considering extracting url: https://www.cdc.gov/abes/about/index.html with timestamp 20241219175904
+2025-02-19 20:31:45,380 - ERROR - WARC versions other than 1.0 are not correctly supported yet
+2025-02-19 20:31:45,380 - INFO - opening new warc file ../public/warcs\_abes_about_index.html.warc.gz-test-000000.extracted.warc.gz
+2025-02-19 20:31:45,400 - INFO - Wrote warc for https://www.cdc.gov/abes/about/index.html
+2025-02-19 20:31:51,864 - INFO - Found closest snapshot: http://www.cdc.gov/abes/data/index.html for timestamp 20250116040455
+2025-02-19 20:31:51,864 - INFO - get_more: fetching cdx from https://web.archive.org/cdx/search/cdx
+2025-02-19 20:31:57,747 - INFO - Considering extracting url: http://www.cdc.gov/abes/data/index.html with timestamp 20250116040455
+2025-02-19 20:31:57,747 - INFO - Skipping because status was 301, not 200
+2025-02-19 20:32:04,191 - INFO - Found closest snapshot: https://www.cdc.gov/abes/site.html for timestamp 20241228191613
+2025-02-19 20:32:04,191 - INFO - get_more: fetching cdx from https://web.archive.org/cdx/search/cdx
+2025-02-19 20:32:10,133 - INFO - Considering extracting url: https://www.cdc.gov/abes/site.html with timestamp 20241228191613
+2025-02-19 20:32:16,854 - ERROR - WARC versions other than 1.0 are not correctly supported yet
+2025-02-19 20:32:16,854 - INFO - opening new warc file ../public/warcs\_abes_site.html.warc.gz-test-000000.extracted.warc.gz
+2025-02-19 20:32:16,858 - INFO - Wrote warc for https://www.cdc.gov/abes/site.html
+2025-02-19 20:32:19,088 - INFO - Found closest snapshot: https://www.cdc.gov/about/advisory-committee-director/cpew.html for timestamp 20250112234327
+2025-02-19 20:32:19,089 - INFO - get_more: fetching cdx from https://web.archive.org/cdx/search/cdx
+2025-02-19 20:32:25,899 - INFO - retrying after 60.00s for HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?limit=10&url=https%3A%2F%2Fwww.cdc.gov%2Fabout%2Fadvisory-committee-director%2Fcpew.html&output=json&page=0 (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)')))
+2025-02-19 20:33:29,048 - INFO - retrying after 60.00s for HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?limit=10&url=https%3A%2F%2Fwww.cdc.gov%2Fabout%2Fadvisory-committee-director%2Fcpew.html&output=json&page=0 (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)')))
+2025-02-19 20:34:29,585 - INFO - Considering extracting url: https://www.cdc.gov/about/advisory-committee-director/cpew.html with timestamp 20250112234327
+2025-02-19 20:34:36,124 - ERROR - WARC versions other than 1.0 are not correctly supported yet
+2025-02-19 20:34:36,124 - INFO - opening new warc file ../public/warcs\_about_advisory-committee-director_cpew.html.warc.gz-test-000000.extracted.warc.gz
+2025-02-19 20:34:36,126 - INFO - Wrote warc for https://www.cdc.gov/about/advisory-committee-director/cpew.html
+2025-02-19 20:51:16,921 - INFO - Found closest snapshot: https://www.cdc.gov/abcs/about/index.html for timestamp 20250115092605
+2025-02-19 20:51:50,397 - INFO - Found closest snapshot: https://www.cdc.gov/abcs/about/index.html for timestamp 20250115092605
+2025-02-19 20:51:50,398 - INFO - get_more: fetching cdx from https://web.archive.org/cdx/search/cdx
+2025-02-19 20:51:50,602 - INFO - Considering extracting url: https://www.cdc.gov/abcs/about/index.html with timestamp 20250115092605
+2025-02-19 20:51:56,904 - ERROR - WARC versions other than 1.0 are not correctly supported yet
+2025-02-19 20:51:56,905 - INFO - opening new warc file ../public/warcs-test-000000.extracted.warc.gz
+2025-02-19 20:51:56,908 - INFO - Wrote warc for https://www.cdc.gov/abcs/about/index.html
+2025-02-19 20:57:56,011 - INFO - Found closest snapshot: https://www.cdc.gov/abcs/about/index.html for timestamp 20250115092605
+2025-02-19 20:59:07,940 - INFO - get_more: fetching cdx from https://web.archive.org/cdx/search/cdx
+2025-02-19 21:00:12,565 - INFO - Considering extracting url: https://www.cdc.gov/abcs/about/index.html with timestamp 20250115092605
+2025-02-19 21:01:23,578 - ERROR - WARC versions other than 1.0 are not correctly supported yet
+2025-02-19 21:01:23,590 - INFO - opening new warc file ../public/warcs-test-000001.extracted.warc.gz
+2025-02-19 21:02:01,262 - INFO - Wrote warc for https://www.cdc.gov/abcs/about/index.html
+2025-02-19 21:11:36,813 - INFO - Successfully loaded 7 URLs from ../data/url_lists/test_urls.csv
+2025-02-19 21:11:36,815 - INFO - Starting URL processing...
+2025-02-19 21:11:36,815 - INFO - Total unique directory paths found: 7
+2025-02-19 21:11:36,815 - INFO - Created directory: ../public/abcs
+2025-02-19 21:11:36,816 - INFO - Created directory: ../public/abcs/about
+2025-02-19 21:11:36,816 - INFO - Created directory: ../public/abcs/es
+2025-02-19 21:11:36,816 - INFO - Created directory: ../public/abes
+2025-02-19 21:11:36,817 - INFO - Created directory: ../public/abes/about
+2025-02-19 21:11:36,817 - INFO - Created directory: ../public/abes/data
+2025-02-19 21:11:36,817 - INFO - Created directory: ../public/about/advisory-committee-director
+2025-02-19 21:11:36,817 - INFO - Directory structure creation completed.
+2025-02-19 21:11:37,139 - INFO - Found closest snapshot: https://www.cdc.gov/abcs/about/index.html for timestamp 20250115092605
+2025-02-19 21:11:37,140 - INFO - get_more: fetching cdx from https://web.archive.org/cdx/search/cdx
+2025-02-19 21:11:43,629 - INFO - Considering extracting url: https://www.cdc.gov/abcs/about/index.html with timestamp 20250115092605
+2025-02-19 21:11:50,101 - ERROR - WARC versions other than 1.0 are not correctly supported yet
+2025-02-19 21:11:50,102 - INFO - opening new warc file ../public/warcs\_abcs_about_index.html.warc.gz-test-000000.extracted.warc.gz
+2025-02-19 21:11:50,113 - INFO - Wrote warc for https://www.cdc.gov/abcs/about/index.html
+2025-02-19 21:11:50,387 - ERROR - No snapshots found before the target date.
+2025-02-19 21:11:50,388 - INFO - get_more: fetching cdx from https://web.archive.org/cdx/search/cdx
+2025-02-19 21:12:02,770 - INFO - Found closest snapshot: https://www.cdc.gov/abcs/site.html for timestamp 20250103220317
+2025-02-19 21:12:02,771 - INFO - get_more: fetching cdx from https://web.archive.org/cdx/search/cdx
+2025-02-19 21:12:09,313 - INFO - Considering extracting url: https://www.cdc.gov/abcs/site.html with timestamp 20250103220317
+2025-02-19 21:12:15,926 - ERROR - WARC versions other than 1.0 are not correctly supported yet
+2025-02-19 21:12:15,928 - INFO - opening new warc file ../public/warcs\_abcs_site.html.warc.gz-test-000000.extracted.warc.gz
+2025-02-19 21:12:15,938 - INFO - Wrote warc for https://www.cdc.gov/abcs/site.html
+2025-02-19 21:12:16,507 - INFO - Found closest snapshot: https://www.cdc.gov/abes/about/index.html for timestamp 20241219175904
+2025-02-19 21:12:16,508 - INFO - get_more: fetching cdx from https://web.archive.org/cdx/search/cdx
+2025-02-19 21:12:22,177 - INFO - Considering extracting url: https://www.cdc.gov/abes/about/index.html with timestamp 20241219175904
+2025-02-19 21:12:29,083 - ERROR - WARC versions other than 1.0 are not correctly supported yet
+2025-02-19 21:12:29,083 - INFO - opening new warc file ../public/warcs\_abes_about_index.html.warc.gz-test-000000.extracted.warc.gz
+2025-02-19 21:12:29,094 - INFO - Wrote warc for https://www.cdc.gov/abes/about/index.html
+2025-02-19 21:12:35,404 - INFO - Found closest snapshot: http://www.cdc.gov/abes/data/index.html for timestamp 20250116040455
+2025-02-19 21:12:35,405 - INFO - get_more: fetching cdx from https://web.archive.org/cdx/search/cdx
+2025-02-19 21:12:41,423 - INFO - Considering extracting url: http://www.cdc.gov/abes/data/index.html with timestamp 20250116040455
+2025-02-19 21:12:41,423 - INFO - Skipping because status was 301, not 200
+2025-02-19 21:12:47,690 - INFO - Found closest snapshot: https://www.cdc.gov/abes/site.html for timestamp 20241228191613
+2025-02-19 21:12:47,691 - INFO - get_more: fetching cdx from https://web.archive.org/cdx/search/cdx
+2025-02-19 21:12:54,286 - INFO - Considering extracting url: https://www.cdc.gov/abes/site.html with timestamp 20241228191613
+2025-02-19 21:13:00,785 - ERROR - WARC versions other than 1.0 are not correctly supported yet
+2025-02-19 21:13:00,786 - INFO - opening new warc file ../public/warcs\_abes_site.html.warc.gz-test-000000.extracted.warc.gz
+2025-02-19 21:13:00,796 - INFO - Wrote warc for https://www.cdc.gov/abes/site.html
+2025-02-19 21:13:01,264 - INFO - Found closest snapshot: https://www.cdc.gov/about/advisory-committee-director/cpew.html for timestamp 20250112234327
+2025-02-19 21:13:01,265 - INFO - get_more: fetching cdx from https://web.archive.org/cdx/search/cdx
+2025-02-19 21:13:09,823 - INFO - retrying after 60.00s for HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?limit=10&url=https%3A%2F%2Fwww.cdc.gov%2Fabout%2Fadvisory-committee-director%2Fcpew.html&output=json&page=0 (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)')))
+2025-02-19 21:14:12,900 - INFO - retrying after 60.00s for HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?limit=10&url=https%3A%2F%2Fwww.cdc.gov%2Fabout%2Fadvisory-committee-director%2Fcpew.html&output=json&page=0 (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)')))
+2025-02-19 21:19:37,393 - INFO - Successfully loaded 7 URLs from ../data/url_lists/test_urls.csv
+2025-02-19 21:19:37,393 - INFO - Starting URL processing...
+2025-02-19 21:19:37,393 - INFO - Total unique directory paths found: 7
+2025-02-19 21:19:37,394 - INFO - Created directory: ../public/abcs
+2025-02-19 21:19:37,394 - INFO - Created directory: ../public/abcs/about
+2025-02-19 21:19:37,394 - INFO - Created directory: ../public/abcs/es
+2025-02-19 21:19:37,394 - INFO - Created directory: ../public/abes
+2025-02-19 21:19:37,394 - INFO - Created directory: ../public/abes/about
+2025-02-19 21:19:37,394 - INFO - Created directory: ../public/abes/data
+2025-02-19 21:19:37,395 - INFO - Created directory: ../public/about/advisory-committee-director
+2025-02-19 21:19:37,395 - INFO - Directory structure creation completed.
+2025-02-19 21:19:37,803 - INFO - Found closest snapshot: https://www.cdc.gov/abcs/about/index.html for timestamp 20250115092605
+2025-02-19 21:19:37,804 - INFO - get_more: fetching cdx from https://web.archive.org/cdx/search/cdx
+2025-02-19 21:19:51,051 - INFO - Considering extracting url: https://www.cdc.gov/abcs/about/index.html with timestamp 20250115092605
+2025-02-19 21:19:57,411 - ERROR - WARC versions other than 1.0 are not correctly supported yet
+2025-02-19 21:19:57,412 - INFO - opening new warc file ../public/warcs\_abcs_about_index.html.warc.gz-test-000001.extracted.warc.gz
+2025-02-19 21:19:57,424 - INFO - Wrote warc for https://www.cdc.gov/abcs/about/index.html
+2025-02-19 21:20:00,906 - ERROR - No snapshots found before the target date.
+2025-02-19 21:20:00,907 - INFO - get_more: fetching cdx from https://web.archive.org/cdx/search/cdx
+2025-02-19 21:20:11,007 - INFO - Found closest snapshot: https://www.cdc.gov/abcs/site.html for timestamp 20250103220317
+2025-02-19 21:20:11,008 - INFO - get_more: fetching cdx from https://web.archive.org/cdx/search/cdx
+2025-02-19 21:20:21,208 - INFO - Considering extracting url: https://www.cdc.gov/abcs/site.html with timestamp 20250103220317
+2025-02-19 21:20:27,925 - ERROR - WARC versions other than 1.0 are not correctly supported yet
+2025-02-19 21:20:27,926 - INFO - opening new warc file ../public/warcs\_abcs_site.html.warc.gz-test-000001.extracted.warc.gz
+2025-02-19 21:20:27,938 - INFO - Wrote warc for https://www.cdc.gov/abcs/site.html
+2025-02-19 21:20:28,183 - INFO - Found closest snapshot: https://www.cdc.gov/abes/about/index.html for timestamp 20241219175904
+2025-02-19 21:20:28,184 - INFO - get_more: fetching cdx from https://web.archive.org/cdx/search/cdx
+2025-02-19 21:20:34,430 - INFO - Considering extracting url: https://www.cdc.gov/abes/about/index.html with timestamp 20241219175904
+2025-02-19 21:20:40,964 - ERROR - WARC versions other than 1.0 are not correctly supported yet
+2025-02-19 21:20:40,965 - INFO - opening new warc file ../public/warcs\_abes_about_index.html.warc.gz-test-000001.extracted.warc.gz
+2025-02-19 21:20:40,978 - INFO - Wrote warc for https://www.cdc.gov/abes/about/index.html
+2025-02-19 21:20:47,713 - INFO - Found closest snapshot: http://www.cdc.gov/abes/data/index.html for timestamp 20250116040455
+2025-02-19 21:20:47,714 - INFO - get_more: fetching cdx from https://web.archive.org/cdx/search/cdx
+2025-02-19 21:20:53,604 - INFO - Considering extracting url: http://www.cdc.gov/abes/data/index.html with timestamp 20250116040455
+2025-02-19 21:20:53,605 - INFO - Skipping because status was 301, not 200
+2025-02-19 21:20:59,916 - INFO - Found closest snapshot: https://www.cdc.gov/abes/site.html for timestamp 20241228191613
+2025-02-19 21:20:59,916 - INFO - get_more: fetching cdx from https://web.archive.org/cdx/search/cdx
+2025-02-19 21:21:06,161 - INFO - Considering extracting url: https://www.cdc.gov/abes/site.html with timestamp 20241228191613
+2025-02-19 21:21:12,529 - ERROR - WARC versions other than 1.0 are not correctly supported yet
+2025-02-19 21:21:12,529 - INFO - opening new warc file ../public/warcs\_abes_site.html.warc.gz-test-000001.extracted.warc.gz
+2025-02-19 21:21:12,539 - INFO - Wrote warc for https://www.cdc.gov/abes/site.html
+2025-02-19 21:21:12,817 - INFO - Found closest snapshot: https://www.cdc.gov/about/advisory-committee-director/cpew.html for timestamp 20250112234327
+2025-02-19 21:21:12,818 - INFO - get_more: fetching cdx from https://web.archive.org/cdx/search/cdx
+2025-02-19 21:21:21,565 - INFO - retrying after 60.00s for HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?limit=10&url=https%3A%2F%2Fwww.cdc.gov%2Fabout%2Fadvisory-committee-director%2Fcpew.html&output=json&page=0 (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)')))
+2025-02-19 21:22:24,657 - INFO - retrying after 60.00s for HTTPSConnectionPool(host='web.archive.org', port=443): Max retries exceeded with url: /cdx/search/cdx?limit=10&url=https%3A%2F%2Fwww.cdc.gov%2Fabout%2Fadvisory-committee-director%2Fcpew.html&output=json&page=0 (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)')))
+2025-02-19 21:23:25,719 - INFO - Considering extracting url: https://www.cdc.gov/about/advisory-committee-director/cpew.html with timestamp 20250112234327
+2025-02-19 21:23:32,298 - ERROR - WARC versions other than 1.0 are not correctly supported yet
+2025-02-19 21:23:32,299 - INFO - opening new warc file ../public/warcs\_about_advisory-committee-director_cpew.html.warc.gz-test-000000.extracted.warc.gz
+2025-02-19 21:23:32,304 - INFO - Wrote warc for https://www.cdc.gov/about/advisory-committee-director/cpew.html
