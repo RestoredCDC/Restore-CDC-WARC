@@ -12,9 +12,6 @@ logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
-# Define the target date (01/19/2025)
-
-
 def get_warc_url(cdx_url):
     """Query the CDX API to get the closest WARC file URL before or on the target date."""
     # Format the CDX API URL for the query
