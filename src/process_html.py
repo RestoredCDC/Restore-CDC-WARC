@@ -1,6 +1,7 @@
 import os
 import re
 from lxml import etree
+import logging
 
 def fix_mismatched_tags(input_file):
     """
@@ -96,11 +97,14 @@ def process_html(input_file, output_file):
     except Exception as e:
         print(f"Error processing {input_file}: {e}")
 
-def process_directory(input_dir, output_dir):
-    os.makedirs(output_dir, exist_ok = True)
-    
-    for filename in os.listdir(input_dir):
-        input_file = os.path.join(input_dir, filename)
+def process_directory(warc_dir, output_dir):
+    #os.makedirs(input_dir, exist_ok = True)
+    logging.info(f"Processing WARC dir: {warc_dir}")
+    for filename in os.listdir(warc_dir):
+        input_file = os.path.join(output_dir, filename)
+        logging.info(f"Processing file{input_file}")
         if os.path.isfile(input_file) and filename.endswith(".html"):
-            output_file = os.path.join(output_dir, filename)
+            correct_dir = warc_dir.replace("https://www.cdc.gov")
+            output_file = os.path.join("../public", correct_dir, filename)
+            logging.info(f"Final WARC directory {correct_dir}")
             process_html(input_file, output_file)

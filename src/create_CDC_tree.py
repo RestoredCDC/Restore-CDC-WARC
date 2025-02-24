@@ -3,15 +3,24 @@ import csv
 import logging
 from urllib.parse import urlparse
 
-# Configure logging: logs to both console and a file
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    handlers=[
-        logging.StreamHandler(),  # Log to console
-        logging.FileHandler("../logs/create_cdc_structure.log")  # Log to file
-    ]
-)
+def create_data_dir(compress_dir, extracted_dir):
+    """
+    Creates directories if specified by config
+    """
+    dir_paths = set()
+    dir_paths.add(compress_dir)
+    dir_paths.add(extracted_dir)
+    
+    for dirpath in dir_paths:
+        os.makedirs(dirpath, exist_ok=True)
+        logging.info(f"Created directory: {dirpath}")
+    
+    logging.debug(f"Created data directories: {
+                    compress_dir} and {extracted_dir}")
+            
+
+'''
+NOTE - no longer needed since warcat will create the directory structure
 
 def read_urls_from_csv(file_path):
     """
@@ -29,6 +38,7 @@ def read_urls_from_csv(file_path):
     except Exception as e:
         logging.critical(f"Error reading CSV file {file_path}: {e}")
     return urls
+
 
 def process_urls(url_list, output_base):
     """
@@ -57,13 +67,18 @@ def process_urls(url_list, output_base):
     # Create directories
     for dir_path in sorted_dirs:
         full_path = os.path.join(output_base, dir_path.lstrip("/"))
+        WARC_dir = os.path.join(full_path, "WARC")
         try:
             os.makedirs(full_path, exist_ok=True)
             logging.info(f"Created directory: {full_path}")
+            os.makedirs(WARC_dir, exist_ok=True)
+            logging.info(f"Created directory: {WARC_dir}")
         except Exception as e:
-            logging.error(f"Error creating directory {full_path}: {e}")
+            logging.error(f"Error creating directory {full_path} or {WARC_dir}: {e}")
 
     logging.info("Directory structure creation completed.")
+
+
 
 def create_cdc_tree(csv_file, output_base):
     """Main function to create the CDC directory tree from URLs in a CSV file.
@@ -76,3 +91,4 @@ def create_cdc_tree(csv_file, output_base):
             logging.warning("No URLs were found in the CSV file.")
     except Exception as e:
         logging.critical(f"An unexpected error occurred: {e}")
+'''

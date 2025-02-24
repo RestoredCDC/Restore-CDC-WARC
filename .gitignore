@@ -2,9 +2,7 @@
 public/*
 venv/*
 .dh-diag
-
-# Un-ignore public/docs/
-!public/docs/build/
+data/*
 
 # ignore binary files
 **/__pycache__/

@@ -1,11 +1,12 @@
 dev:
-    csv_file: ../data/url_lists/test_urls.csv
-    output_base: ../public/
-    extraction_input_folder: ../data/extracted/
-    extraction_output_folder: ../data/extracted_html/
+    csv_file: ../data/url_lists/test_directory_urls.csv
+    output_base: ../public
+    warc_compressed: ../data/WARC_compressed/
+    warc_extracted: ../data/WARC_extracted/
+
 
 prod:
     csv_file: ../data/url_lists/CDC_html_URLs_from_sitemap_data_-_20241201.csv
     output_base: ../public/
-    extraction_input_folder: ../data/extracted/
-    extraction_output_folder: ../data/extracted_html/
+    warc_compressed: ../data/WARC_compressed/
+    warc_extracted: ../data/WARC_extracted/
