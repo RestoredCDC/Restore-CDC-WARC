@@ -14,6 +14,13 @@ logging.basicConfig(
 )
 
 def get_with_retries(url, max_retries=3, delay=3):
+    """
+    Handling requests with retries and timeouts
+    :param url: URL to try
+    :param max_retries: integer for maximum number of retries to attempt
+    :param delay: time in seconds for delay calculations
+    :return none
+    """
     for attempt in range(max_retries):
         try:
             return requests.get(url, timeout=30)
@@ -21,20 +28,32 @@ def get_with_retries(url, max_retries=3, delay=3):
             print(f"Attempt {attempt+1} timed out: {e}")
             logging.debug("URL retry delay")
             time.sleep(delay* (2 ** attempt))
+            continue
         except requests.exceptions.ConnectionError as e:
             logging.debug(f"Attempt {attempt + 1} failed: {e}")
             logging.debug("URL retry delay")
             time.sleep(delay* (2 ** attempt))
+            continue
         except Exception as e:
             logging.warning(f"Skipping URL due to repeated failure: {url} — {str(e)}")
             continue
-        raise Exception(f"Failed to connect to {url} after {max_retries} attempts.")
+    logging.warning(f"Skipping URL after {max_retries} failed attempts: {url}")
+    return None  # <-- Don't raise, just return None
 
 def get_warc_url(cdx_url):
-    """Query the CDX API to get the closest WARC file URL before or on the target date."""
+    """
+    Query the CDX API to get the closest WARC file URL before or on the target date.
+    :param cdx_url: URL used to find archive for
+    :return none
+    """
     # Format the CDX API URL for the query
-    cdx_api_url = f"https://web.archive.org/cdx/search/cdx?url={cdx_url}&output=json&fl=timestamp,original,warc_url&limit=25000"
-
+    cdx_api_url = (
+        f"https://web.archive.org/cdx/search/cdx?"
+        f"url={cdx_url}"
+        f"&output=json"
+        f"&fl=timestamp,original,warc_url"
+        f"&limit=25000"
+    )
     # Send the request to the CDX API
     response = get_with_retries(cdx_api_url)
 
@@ -70,12 +89,23 @@ def get_warc_url(cdx_url):
 
 
 def get_best_date_for_url(cdx_url):
-    """Query the CDX API to get the closest WARC file URL before or on the target date."""
+    """
+    Query the CDX API to get the closest WARC file URL before or on the target date.
+    :param cdx_url: URL to find archive for
+    :return none
+    """
     # Format the CDX API URL for the query
-    # TODO A limit of 25,000 could make a tough bug to find; if we run this in the future, and web.archive.org has made
-    #  more than that many backups, we could end up not seeing the right version.
-    cdx_api_url = f"https://web.archive.org/cdx/search/cdx?url={cdx_url}&output=json&fl=timestamp,original,warc_url&limit=25000"
-
+    # TODO A limit of 25,000 could make a tough bug to find; 
+    # if we run this in the future, and web.archive.org has made
+    # more than that many backups, we could end up not seeing the right version.
+    cdx_api_url = (
+        f"https://web.archive.org/cdx/search/cdx?"
+        f"url={cdx_url}"
+        f"&output=json"
+        f"&fl=timestamp,original,warc_url"
+        f"&limit=25000"
+    )
+    
     # Send the request to the CDX API
     response = get_with_retries(cdx_api_url)
 
@@ -111,10 +141,10 @@ def get_best_date_for_url(cdx_url):
 def download_warc_cdx_toolkit(url, best_timestamp, warc_save_path):
     """
     Adapted from example: https://github.com/cocrawler/cdx_toolkit/blob/main/examples/iter-and-warc.py
-    :param url:
-    :param best_timestamp
-    :param warc_save_path
-    :return: none
+    :param url: a URL to find WARC
+    :param best_timestamp: a datetime used to find WARC
+    :param warc_save_path: a path where the WARC will be saved
+    :return none
     """
     logging.debug(f"Attempting to download warc for {url}")
     cdx = cdx_toolkit.CDXFetcher(source="ia")
@@ -125,8 +155,7 @@ def download_warc_cdx_toolkit(url, best_timestamp, warc_save_path):
         "format": "WARC file version 1.0",
     }
 
-    # TODO verify the conventions of warc info, and the conventions of using subprefix (set to "test" right now).
-    logging.debug(f"$warc_save_path: {warc_save_path}")
+    #logging.debug(f"$warc_save_path: {warc_save_path}")
     
     writer = cdx_toolkit.warc.get_writer(
         warc_save_path, "", warcinfo
@@ -156,7 +185,12 @@ def download_warc_cdx_toolkit(url, best_timestamp, warc_save_path):
 
 
 def process_cdc_urls(subdomains, base_dir):
-    """Process a list of URLs, download the closest WARC snapshot, and extract resources."""
+    """
+    Process a list of URLs, download the closest WARC snapshot, and extract resources.
+    :param subdomains: a nested list of subdomains and paths to use to find WARC archives
+    :param base_dir: a file location to save the WARC
+    :return none
+    """
 
     for subdomain, paths in subdomains.items():
         for path in paths:
@@ -171,12 +205,14 @@ def process_cdc_urls(subdomains, base_dir):
             
             warc_save_path = os.path.join(base_dir, warc_filename)
             
-            logging.debug(f"$warc_save_path: {warc_save_path}")
-            logging.debug(f"$warc_filename: {warc_filename}")
+            #logging.debug(f"$warc_save_path: {warc_save_path}")
+            #logging.debug(f"$warc_filename: {warc_filename}")
 
-            # Download the WARC file for the best timestamp
-            timestamp = get_best_date_for_url(url)
-            download_warc_cdx_toolkit(url, timestamp, warc_save_path)
-
-        # Extract components from the WARC file
-        # extract_warc_components(warc_save_path, base_dir)
+            #check if warc already exists
+            if os.path.exists(warc_save_path):
+                logging.debug(f"warc exists: {warc_save_path}")
+                pass
+            else:
+                # Download the WARC file for the best timestamp
+                timestamp = get_best_date_for_url(url)
+                download_warc_cdx_toolkit(url, timestamp, warc_save_path)

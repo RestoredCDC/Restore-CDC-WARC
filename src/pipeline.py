@@ -30,6 +30,8 @@ def main():
     # Load config
     config = load_config()
 
+    #TODO: code to create directories if they do not exist
+
     # Select config based on run_mode
     if args.run_mode in config:
         selected_config = config[args.run_mode]
@@ -37,9 +39,9 @@ def main():
     else:
         print(f"Error: run_mode '{args.run_mode}' not found in config.yaml")
 
-    #subdomains = read_urls_from_csv(selected_config['csv_file'])
-    #url_list = detect_urlkeys_from_subdomains(subdomains)
-    #process_cdc_urls(url_list, selected_config['extraction_input_folder'])
+    subdomains = read_urls_from_csv(selected_config['csv_file'])
+    url_list = detect_urlkeys_from_subdomains(subdomains)
+    process_cdc_urls(url_list, selected_config['extraction_input_folder'])
     create_db(selected_config['extraction_input_folder'])
 
 
