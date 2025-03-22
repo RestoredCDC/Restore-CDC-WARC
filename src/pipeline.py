@@ -1,10 +1,21 @@
 import argparse
+import logging
+import os
 from config_loader import load_config
-from create_CDC_tree import create_cdc_tree
-from extraction_processing import extraction_processing
+from clean_urlkey import detect_urlkeys_from_subdomains
+from clean_urlkey import read_urls_from_csv
 from retrieve_snapshot import process_cdc_urls
-from process_html import process_directory
+from create_leveldb import create_db
 
+# Configure logging: logs to both console and a file
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s - %(levelname)s - %(funcName)s - %(message)s",
+    handlers=[
+        logging.StreamHandler(),  # Log to console
+        logging.FileHandler("../logs/restoreCDCWarc.log")  # Log to file
+    ]
+)
 
 def main():
     parser = argparse.ArgumentParser(description="Select run mode for configuration")
@@ -26,12 +37,10 @@ def main():
     else:
         print(f"Error: run_mode '{args.run_mode}' not found in config.yaml")
 
-
-    # Change this to match your actual CSV file name
-    create_cdc_tree(selected_config['csv_file'], selected_config['output_base'])
-    process_cdc_urls(selected_config['csv_file'], selected_config['output_base']) #retrieve snapshots
-    extraction_processing(selected_config['extraction_input_folder'], selected_config['extraction_output_folder'])
-    process_directory(selected_config['extraction_output_folder'], selected_config['extraction_output_folder']) #process html files
+    #subdomains = read_urls_from_csv(selected_config['csv_file'])
+    #url_list = detect_urlkeys_from_subdomains(subdomains)
+    #process_cdc_urls(url_list, selected_config['extraction_input_folder'])
+    create_db(selected_config['extraction_input_folder'])
 
 
 if __name__ == "__main__":
