@@ -13,6 +13,7 @@ def read_urls_from_csv(file_path):
     """
     Reads URLs from a CSV file and returns them as a list.
     Assumes URLs are in the first column.
+    :param file_path: a single file path pointing to CSV file
     """
     urls = []
     try:
@@ -28,6 +29,10 @@ def read_urls_from_csv(file_path):
     return urls
 
 def clean_urls(url_list):
+    """
+    Strip out the archival prefix before the close paranthesis.
+    :param url_list: a list of strings that are URLs
+    """
     cleaned_paths = set()
     for raw_path in url_list:
         try:
@@ -49,7 +54,10 @@ def clean_urls(url_list):
 
 def detect_urlkeys_from_subdomains(subdomains):
     """
-    Takes list of subdomains, pulls all archived page paths and sends them back
+    Takes list of subdomains, pulls all archived page paths and sends them back. These
+    will be used to search for WARC files.
+    :param subdomains: a list of subdomains with one subdomain per row 
+                        to be used to find archived pages
     """
     urlkeys = {}
     for sdomain in subdomains:
@@ -59,8 +67,13 @@ def detect_urlkeys_from_subdomains(subdomains):
 
         cdx_call = (
             f"http://web.archive.org/cdx/search/cdx?"
-            f"url={url}&matchType=prefix&from=20240101&to=20250119&"
-            f"filter=statuscode:200&collapse=urlkey&fl=urlkey"
+            f"url={url}"
+            f"&matchType=prefix"
+            f"&from=20200101"
+            f"&to=20250119"
+            f"&filter=statuscode:200"
+            f"&collapse=urlkey"
+            f"&fl=urlkey"
         )
 
         try:
