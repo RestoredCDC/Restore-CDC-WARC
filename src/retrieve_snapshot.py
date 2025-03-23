@@ -197,12 +197,13 @@ def download_warc_cdx_toolkit(url, best_timestamp, warc_save_path):
             logging.info(f"********SUCCESS!********** Wrote warc for {url}")
 
 
-def process_cdc_urls(subdomains, base_dir):
+def process_cdc_urls(subdomains, base_dir, failed_urls):
     """
     Process a list of URLs, download the closest WARC snapshot, and extract resources.
     :param subdomains: a nested list of subdomains and paths to use to find WARC archives
     :param base_dir: a file location to save the WARC
-    :return none
+    :param failed_urls: a file where failed URLs are logged
+    :return: none
     """
 
     for subdomain, paths in subdomains.items():
