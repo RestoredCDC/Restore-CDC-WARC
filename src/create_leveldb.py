@@ -5,13 +5,13 @@ import os
 import re
 from warcio.archiveiterator import ArchiveIterator
 
-def create_db(loc):
+def create_db(loc, dbfolder):
     """
     In a given location unpack gzipped files and extract URL and contents into LevelDB
     :param loc: local directory with read and write permissions
     """
     directory = os.fsencode(loc)
-    db = plyvel.DB('./cdc_database', create_if_missing=True)
+    db = plyvel.DB(os.path.join(dbfolder, 'cdc_database'), create_if_missing=True)
 
     content_db = db.prefixed_db(b"c-")
     mimetype_db = db.prefixed_db(b"m-")
@@ -41,5 +41,3 @@ def create_db(loc):
         stream.close()
             
     db.close()       
-               
-    

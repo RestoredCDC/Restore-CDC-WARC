@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import argparse
 import logging
 import os
@@ -30,8 +32,6 @@ def main():
     # Load config
     config = load_config()
 
-    #TODO: code to create directories if they do not exist
-
     # Select config based on run_mode
     if args.run_mode in config:
         selected_config = config[args.run_mode]
@@ -39,10 +39,23 @@ def main():
     else:
         print(f"Error: run_mode '{args.run_mode}' not found in config.yaml")
 
+    folders = [
+        selected_config['extraction_input_folder'],
+        selected_config['extraction_output_folder'], # Unused right now?
+        selected_config['db_folder'],
+        selected_config['output_base']
+    ]
+    for folder in folders:
+        if os.path.exists(folder):
+            continue
+        print(f"Creating {folder}")
+        os.mkdir(folder, mode=0o755)
+
     subdomains = read_urls_from_csv(selected_config['csv_file'])
     url_list = detect_urlkeys_from_subdomains(subdomains)
     process_cdc_urls(url_list, selected_config['extraction_input_folder'])
-    create_db(selected_config['extraction_input_folder'])
+    create_db(selected_config['extraction_input_folder'],
+              selected_config['db_folder'])
 
 
 if __name__ == "__main__":
