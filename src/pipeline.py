@@ -9,6 +9,12 @@ from clean_urlkey import read_urls_from_csv
 from retrieve_snapshot import process_cdc_urls
 from create_leveldb import create_db
 
+# Checking and creating this folder separate from others, because we
+# start the logging config before anything else
+if not os.path.exists("../logs"):
+    print("Creating ../logs/")
+    os.mkdir("../logs", mode=0o755)
+
 # Configure logging: logs to both console and a file
 logging.basicConfig(
     level=logging.DEBUG,
@@ -49,7 +55,7 @@ def main():
         if os.path.exists(folder):
             continue
         print(f"Creating {folder}")
-        os.mkdir(folder, mode=0o755)
+        os.makedirs(folder, mode=0o755)
 
     subdomains = read_urls_from_csv(selected_config['csv_file'])
     url_list = detect_urlkeys_from_subdomains(subdomains)
