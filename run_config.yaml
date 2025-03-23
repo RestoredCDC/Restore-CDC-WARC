@@ -1,15 +1,17 @@
 dev:
     csv_file: ../data/url_lists/test_urls.csv
-    warc_folder: ../data/warcs/
-    db_folder: ../data/db/
+    warc_folder: ../data/dev/warcs/
+    db_folder: ../data/dev/db/
+    state_folder: ../data/dev/state/
     track_failed_urls: True
     new_failed_url_list: False
-    failed_url_list: ../data/url_lists/failed_URLs.txt
+    failed_url_list: ../data/dev/failed_URLs.txt
 
 prod:
     csv_file: ../data/url_lists/subdomain_list.txt
-    warc_folder: ../data/extracted/
-    db_folder: ../data/db/
+    warc_folder: ../data/prod/warcs/
+    db_folder: ../data/prod/db/
+    state_folder: ../data/prod/state/
     track_failed_urls: True
     new_failed_url_list: False
-    failed_url_list: ../data/url_lists/failed_URLs.txt
+    failed_url_list: ../data/prod/failed_URLs.txt

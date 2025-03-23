@@ -36,14 +36,21 @@ def main():
         help="Specify the run mode: 'dev' or 'prod'"
     )
     parser.add_argument("--debug", action="store_true", help="Enable debug logging")
+    args = parser.parse_args()
 
     # Then set log level dynamically:
     log_level = logging.DEBUG if args.debug else logging.INFO
     logging.getLogger().setLevel(log_level)
 
-    args = parser.parse_args()
     config = load_config()
     
+    if args.run_mode in config:
+        selected_config = config[args.run_mode]
+        logging.info(f"Running in {args.run_mode} mode with config: {selected_config}")
+    else:
+        logging.error(f"run_mode '{args.run_mode}' not found in config.yaml")
+        exit(1)
+
     required_keys = [
         'csv_file', 'warc_folder', 'db_folder',
         'track_failed_urls', 'new_failed_url_list', 'failed_url_list'
@@ -58,23 +65,10 @@ def main():
         logging.error(f"CSV file not found: {csv_path}")
         exit(1)
 
-    if selected_config.get("track_failed_urls") and failed_urls:
-        with open(selected_config["failed_url_list"], "w") as f:
-            for url in failed_urls:
-                f.write(url + "\\n")
-        logging.info(f"Saved failed URLs to {selected_config['failed_url_list']}")
-
-    if args.run_mode in config:
-        selected_config = config[args.run_mode]
-        logging.info(f"Running in {args.run_mode} mode with config: {selected_config}")
-    else:
-        logging.error(f"run_mode '{args.run_mode}' not found in config.yaml")
-        exit(1)
-
     folders = [
         Path(selected_config['warc_folder']),
         Path(selected_config['db_folder']),
-        Path(selected_config['output_base'])
+        Path(selected_config['state_folder'])
     ]
     for folder in folders:
         if folder.exists():
@@ -85,15 +79,22 @@ def main():
     start_time = time()
 
     subdomains = read_urls_from_csv(selected_config['csv_file'])
-    url_list = detect_urlkeys_from_subdomains(subdomains)
+    url_list = detect_urlkeys_from_subdomains(selected_config['state_folder'], subdomains)
 
     logging.debug("Starting process_cdc_urls")
-    process_cdc_urls(
-        url_list,
+    failed_urls = process_cdc_urls(
+        selected_config['state_folder'],
         selected_config['warc_folder'],
         selected_config['track_failed_urls'],
-        selected_config['failed_url_list']
+        selected_config['failed_url_list'],
+        url_list
     )
+
+    if selected_config.get("track_failed_urls") and len(failed_urls) > 0:
+        with open(selected_config["failed_url_list"], "w") as f:
+            for url in failed_urls:
+                f.write(url + "\n")
+        logging.info(f"Saved failed URLs to {selected_config['failed_url_list']}")
 
     logging.debug("Starting create_db")
     create_db(

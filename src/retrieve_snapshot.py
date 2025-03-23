@@ -1,5 +1,6 @@
 # Standard library imports
 import csv
+import json
 import logging
 import os
 import time
@@ -54,7 +55,8 @@ def get_warc_url(cdx_url):
         f"url={cdx_url}"
         f"&output=json"
         f"&fl=timestamp,original,warc_url"
-        f"&limit=25000"
+        f"&limit=-1"
+        f"&to=20250119"
     )
     # Send the request to the CDX API
     response = get_with_retries(cdx_api_url)
@@ -110,7 +112,8 @@ def get_best_date_for_url(cdx_url):
         f"url={cdx_url}"
         f"&output=json"
         f"&fl=timestamp,original,warc_url"
-        f"&limit=25000"
+        f"&limit=-1"
+        f"&to=20250119"
     )
     
     # Send the request to the CDX API
@@ -157,8 +160,9 @@ def download_warc_cdx_toolkit(url, best_timestamp, warc_save_path):
     :param url: a URL to find WARC
     :param best_timestamp: a datetime used to find WARC
     :param warc_save_path: a path where the WARC will be saved
-    :return none
+    :return: A list of *.warc(.gz) files, and a flag indicating if we noticed any problems
     """
+    files = []
     logging.debug(f"Attempting to download warc for {url}")
     cdx = cdx_toolkit.CDXFetcher(source="ia")
     warcinfo = {
@@ -174,10 +178,13 @@ def download_warc_cdx_toolkit(url, best_timestamp, warc_save_path):
         warc_save_path, "", warcinfo
     )
 
+    issues_seen = False
+    match_found = False
     #TODO Possible loss of data if it goes beyond this limit; ideally there's a method to check the size of cdx but there isn't always
     for obj in cdx.iter(url, limit=10):
         timestamp = obj["timestamp"]
         if timestamp == best_timestamp:
+            match_found = True
             url = obj["url"]
             status = obj["status"]
             logging.info(
@@ -185,6 +192,7 @@ def download_warc_cdx_toolkit(url, best_timestamp, warc_save_path):
             )
             if status != "200":
                 logging.debug("Skipping because status was {}, not 200".format(status))
+                issues_seen = True
                 continue
             try:
                 record = obj.fetch_warc_record()
@@ -192,27 +200,46 @@ def download_warc_cdx_toolkit(url, best_timestamp, warc_save_path):
                 logging.debug(
                     "Skipping capture for RuntimeError 404: %s %s", url, timestamp
                 )
+                issues_seen = True
                 continue
             writer.write_record(record)
+            files.append(writer.filename)
             logging.info(f"********SUCCESS!********** Wrote warc for {url}")
+    if not match_found:
+        issues_seen = True
+    return files, issues_seen
 
-
-def process_cdc_urls(subdomains, base_dir, failed_urls):
+def process_cdc_urls(state_folder, base_dir, track_failed_urls, failed_urls, subdomains):
     """
     Process a list of URLs, download the closest WARC snapshot, and extract resources.
-    :param subdomains: a nested list of subdomains and paths to use to find WARC archives
+    :param state_folder: Folder in which to track/cache the URLs we've already processed before
     :param base_dir: a file location to save the WARC
+    :param track_failed_urls: flag to indicate how to handle failed URLs
     :param failed_urls: a file where failed URLs are logged
-    :return: none
+    :param subdomains: a nested list of subdomains and paths to use to find WARC archives
+    :return: a list of failed URLs
     """
 
+    failed_urls = []
+
     for subdomain, paths in subdomains.items():
+        fetched_file = f"{state_folder}/fetched.{subdomain}.json"
+        if os.path.exists(fetched_file):
+            with open(fetched_file, "r", encoding="utf-8") as fetched_fd:
+                fetched_state = json.load(fetched_fd)
+                fetched_fd.close()
+        else:
+            fetched_state = {}
         for path in paths:
             url = os.path.join(subdomain + path)
-            logging.debug(f"==================== NEW URL ====================")
-            logging.debug(f"$url {url}")
+            if path in fetched_state:
+                logging.info(f"Previous result for {path}: {fetched_state[path]}")
+                if fetched_state[path]['issues']:
+                    failed_urls.append(url)
+                continue
+            logging.info(f"========== Processing URL: {url} ==========")
 
-        # Define the path where to save the WARC file
+            # Define the prefix for saving the WARC segments
             warc_filename = (
                 url.replace("/", "_") 
             )
@@ -232,4 +259,14 @@ def process_cdc_urls(subdomains, base_dir, failed_urls):
                 continue
                 
             timestamp = get_best_date_for_url(url)
-            download_warc_cdx_toolkit(url, timestamp, warc_save_path)
+            files, issues = download_warc_cdx_toolkit(url, timestamp, warc_save_path)
+            fetched_state[path] = { "files": files, "issues": issues }
+            if issues:
+                failed_urls.append(url)
+
+            # Write intermediate state to disk, so we can pick it up
+            # if we abort the process or it crashes
+            with open(fetched_file, "w", encoding="utf-8") as fetched_fd:
+                json.dump(fetched_state, fetched_fd)
+                fetched_fd.close()
+    return failed_urls

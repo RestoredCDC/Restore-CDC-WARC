@@ -36,9 +36,9 @@ def clean_urls(url_list):
     Remove archival prefix (e.g., timestamps or metadata) before the close parenthesis ')'.
     
     :param url_list: A list of raw URL strings.
-    :return: A set of cleaned URL paths.
+    :return: A list of cleaned URL paths.
     """
-    cleaned_paths = set()
+    cleaned_paths = []
     for raw_path in url_list:
         try:
             if isinstance(raw_path, bytes):
@@ -51,7 +51,7 @@ def clean_urls(url_list):
             else:
                 path = raw_path
 
-            cleaned_paths.add(path)
+            cleaned_paths.append(path)
         except (ValueError, UnicodeDecodeError) as e:
             logging.warning(f"Skipping malformed URL entry: {raw_path} — {e}")
         except Exception as e:
@@ -59,10 +59,11 @@ def clean_urls(url_list):
     
     return cleaned_paths
 
-def detect_urlkeys_from_subdomains(subdomains):
+def detect_urlkeys_from_subdomains(state_folder, subdomains):
     """
     Fetches URL keys from the Internet Archive's CDX API for a list of subdomains.
 
+    :param state_folder: Folder in which to track/cache the list of URLs found on a previous run
     :param subdomains: List of subdomains (e.g., ["example.com", "blog.example.com"])
     :return: Dictionary {subdomain: set of urlkeys}
     """
@@ -70,6 +71,20 @@ def detect_urlkeys_from_subdomains(subdomains):
     for sdomain in subdomains:
         parsed_url = urlparse(sdomain)
         netloc = parsed_url.netloc or parsed_url.path  # handle just subdomain strings
+
+        # Check if we've already fetched this subdomain's list of URLs
+        state_file = f"{state_folder}/url_list.{netloc}.list"
+        if os.path.exists(state_file):
+            with open(state_file, 'r', encoding='utf-8') as state_fd:
+                cleaned_data = []
+                for line in state_fd:
+                    line = line.rstrip()
+                    cleaned_data.append(line)
+                urlkeys[netloc] = cleaned_data
+                state_fd.close()
+            logging.info(f"Retrieved {len(urlkeys[netloc])} URLs for {netloc} from state file.")
+            continue
+
         url = f"{netloc}/"
 
         cdx_call = (
@@ -87,11 +102,17 @@ def detect_urlkeys_from_subdomains(subdomains):
             response = requests.get(cdx_call)
             if response.status_code == 200:
                 raw_data = response.text.splitlines()
-                cleaned_data = clean_urls(raw_data)
+                cleaned_data = sorted(clean_urls(raw_data))
                 urlkeys[netloc] = cleaned_data
+
+                # Preserve the list in the appropriate state_file
+                with open(state_file, 'w', encoding='utf-8') as state_fd:
+                    for url in cleaned_data:
+                        state_fd.write(f"{url}\n")
+                    state_fd.close()
             else:
                 logging.error(f"Error retrieving urlkeys for subdomain: {netloc} — Status code: {response.status_code}")
         except Exception as e:
             logging.exception(f"Exception retrieving urlkeys for subdomain: {netloc} — {str(e)}")
-
+        logging.info(f"Retrieved {len(urlkeys[netloc])} URLs for {netloc}")
     return urlkeys
