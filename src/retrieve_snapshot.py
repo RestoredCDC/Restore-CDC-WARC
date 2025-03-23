@@ -13,7 +13,7 @@ logging.basicConfig(
     level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(funcName)s - %(message)s"
 )
 
-def get_with_retries(url, max_retries=3, delay=3):
+def get_with_retries(url, max_retries=5, delay=3):
     """
     Handling requests with retries and timeouts
     :param url: URL to try
@@ -57,35 +57,40 @@ def get_warc_url(cdx_url):
     # Send the request to the CDX API
     response = get_with_retries(cdx_api_url)
 
-    if response.status_code == 200:
-        data = response.json()
+    if not response:
+        logging.error(
+            f"Failed to reach CDX API entirely."
+        )
+        return None
 
-        # Filter snapshots that are on or before the target date
-        closest_snapshot = None
-        for entry in data[1:]:
-            timestamp = entry[0]
-            snapshot_date = datetime.strptime(timestamp, "%Y%m%d%H%M%S")
-            if snapshot_date <= TARGET_DATE:
-                closest_snapshot = entry
-            else:
-                break  # Since the data is sorted by date, no need to check further snapshots
-
-        if closest_snapshot:
-            # Extract the WARC URL and timestamp
-            warc_url = closest_snapshot[1]
-            timestamp = closest_snapshot[0]
-            logging.info(
-                f"Found closest snapshot: {warc_url} for timestamp {timestamp}"
-            )
-            return warc_url
-        else:
-            logging.error("No snapshots found before the target date.")
-            return None
-    else:
+    if response.status_code != 200:
         logging.error(
             f"Failed to query CDX API. HTTP status code: {response.status_code}"
         )
         return None
+
+    data = response.json()
+
+    # Filter snapshots that are on or before the target date
+    closest_snapshot = None
+    for entry in data[1:]:
+        timestamp = entry[0]
+        snapshot_date = datetime.strptime(timestamp, "%Y%m%d%H%M%S")
+        if snapshot_date <= TARGET_DATE:
+            closest_snapshot = entry
+        else:
+            break  # Since the data is sorted by date, no need to check further snapshots
+
+    if not closest_snapshot:
+        logging.error("No snapshots found before the target date.")
+        return None
+    # Extract the WARC URL and timestamp
+    warc_url = closest_snapshot[1]
+    timestamp = closest_snapshot[0]
+    logging.info(
+        f"Found closest snapshot: {warc_url} for timestamp {timestamp}"
+    )
+    return warc_url
 
 
 def get_best_date_for_url(cdx_url):
@@ -109,33 +114,39 @@ def get_best_date_for_url(cdx_url):
     # Send the request to the CDX API
     response = get_with_retries(cdx_api_url)
 
-    if response.status_code == 200:
-        data = response.json()
+    if not response:
+        logging.error(
+            f"Failed to reach CDX API entirely."
+        )
+        return None
 
-        # Filter snapshots that are on or before the target date
-        closest_snapshot = None
-        for entry in data[1:]:
-            timestamp = entry[0]
-            snapshot_date = datetime.strptime(timestamp, "%Y%m%d%H%M%S")
-            if snapshot_date <= TARGET_DATE:
-                closest_snapshot = entry
-            else:
-                break  # Since the data is sorted by date, no need to check further snapshots
-
-        if closest_snapshot:
-            # Extract the WARC URL and timestamp
-            url = closest_snapshot[1]
-            timestamp = closest_snapshot[0]
-            logging.info(f"Found closest snapshot: {url} for timestamp {timestamp}")
-            return timestamp
-        else:
-            logging.error("No snapshots found before the target date.")
-            return None
-    else:
+    if response.status_code != 200:
         logging.error(
             f"Failed to query CDX API. HTTP status code: {response.status_code}"
         )
         return None
+
+    data = response.json()
+
+    # Filter snapshots that are on or before the target date
+    closest_snapshot = None
+    for entry in data[1:]:
+        timestamp = entry[0]
+        snapshot_date = datetime.strptime(timestamp, "%Y%m%d%H%M%S")
+        if snapshot_date <= TARGET_DATE:
+            closest_snapshot = entry
+        else:
+            break  # Since the data is sorted by date, no need to check further snapshots
+
+    if not closest_snapshot:
+        logging.error("No snapshots found before the target date.")
+        return None
+
+    # Extract the WARC URL and timestamp
+    url = closest_snapshot[1]
+    timestamp = closest_snapshot[0]
+    logging.info(f"Found closest snapshot: {url} for timestamp {timestamp}")
+    return timestamp
 
 
 def download_warc_cdx_toolkit(url, best_timestamp, warc_save_path):
