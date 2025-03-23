@@ -1,13 +1,15 @@
 dev:
     csv_file: ../data/url_lists/test_urls.csv
-    output_base: ../public/
-    extraction_input_folder: ../data/warcs/
+    warc_folder: ../data/warcs/
     db_folder: ../data/db/
-    extraction_output_folder: ../data/extracted/
+    track_failed_urls: True
+    new_failed_url_list: False
+    failed_url_list: ../data/url_lists/failed_URLs.txt
 
 prod:
-    csv_file: ../data/url_lists/CDC_html_URLs_from_sitemap_data_-_20241201.csv
-    output_base: ../public/
-    extraction_input_folder: ../data/extracted/
+    csv_file: ../data/url_lists/subdomain_list.txt
+    warc_folder: ../data/extracted/
     db_folder: ../data/db/
-    extraction_output_folder: ../data/extracted_html/
+    track_failed_urls: True
+    new_failed_url_list: False
+    failed_url_list: ../data/url_lists/failed_URLs.txt

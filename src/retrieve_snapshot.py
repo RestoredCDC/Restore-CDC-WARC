@@ -1,44 +1,46 @@
-import requests
-import os
+# Standard library imports
 import csv
-import warcio
 import logging
-import cdx_toolkit
+import os
 import time
 from datetime import datetime
+
+# Third-party imports
+import requests
+import cdx_toolkit
+
+# Local application/library imports
 from constants import TARGET_DATE
 
-# Set up logging
-logging.basicConfig(
-    level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(funcName)s - %(message)s"
-)
-
-def get_with_retries(url, max_retries=5, delay=3):
+def get_with_retries(url, max_retries=5, delay=3, failed_urls=None, track_failures=True):
     """
     Handling requests with retries and timeouts
     :param url: URL to try
     :param max_retries: integer for maximum number of retries to attempt
     :param delay: time in seconds for delay calculations
-    :return none
+    :param failed_urls: optional list to collect URLs that fail all attempts
+    :param track_failures: if True, append failed URL to list
+    :return: Response object or None
     """
     for attempt in range(max_retries):
         try:
             return requests.get(url, timeout=30)
         except requests.exceptions.ReadTimeout as e:
-            print(f"Attempt {attempt+1} timed out: {e}")
-            logging.debug("URL retry delay")
-            time.sleep(delay* (2 ** attempt))
+            logging.error(f"Attempt {attempt+1} timed out for URL {url}: {e}")
+            time.sleep(delay * (2 ** attempt))
             continue
         except requests.exceptions.ConnectionError as e:
-            logging.debug(f"Attempt {attempt + 1} failed: {e}")
-            logging.debug("URL retry delay")
-            time.sleep(delay* (2 ** attempt))
+            logging.error(f"Attempt {attempt+1} connection failed for URL {url}: {e}")
+            time.sleep(delay * (2 ** attempt))
             continue
         except Exception as e:
-            logging.warning(f"Skipping URL due to repeated failure: {url} — {str(e)}")
+            logging.error(f"Unexpected error for URL {url} on attempt {attempt+1}: {e}")
             continue
     logging.warning(f"Skipping URL after {max_retries} failed attempts: {url}")
-    return None  # <-- Don't raise, just return None
+    if failed_urls is not None and track_failures:
+        failed_urls.append(url)
+    return None
+
 
 def get_warc_url(cdx_url):
     """
@@ -222,8 +224,11 @@ def process_cdc_urls(subdomains, base_dir):
             #check if warc already exists
             if os.path.exists(warc_save_path):
                 logging.debug(f"warc exists: {warc_save_path}")
-                pass
-            else:
-                # Download the WARC file for the best timestamp
-                timestamp = get_best_date_for_url(url)
-                download_warc_cdx_toolkit(url, timestamp, warc_save_path)
+                continue
+                
+            if url in failed_urls:
+                logging.warning(f"Skipping processing for failed URL: {url}")
+                continue
+                
+            timestamp = get_best_date_for_url(url)
+            download_warc_cdx_toolkit(url, timestamp, warc_save_path)

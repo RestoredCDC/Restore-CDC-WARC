@@ -1,8 +1,9 @@
-import plyvel
 import gzip
 import logging
 import os
 import re
+
+import plyvel
 from warcio.archiveiterator import ArchiveIterator
 
 def create_db(loc, dbfolder):

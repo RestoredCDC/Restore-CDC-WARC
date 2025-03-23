@@ -1,19 +1,21 @@
+"""
+Utility functions for processing archived URLs from the Wayback Machine.
+"""
+
 import os
 import csv
 import logging
+
 import requests
 from urllib.parse import urlparse
-
-# Set up logging
-logging.basicConfig(
-    level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(funcName)s - %(message)s"
-)
 
 def read_urls_from_csv(file_path):
     """
     Reads URLs from a CSV file and returns them as a list.
     Assumes URLs are in the first column.
+    
     :param file_path: a single file path pointing to CSV file
+    :return: List of URL strings
     """
     urls = []
     try:
@@ -21,43 +23,48 @@ def read_urls_from_csv(file_path):
             reader = csv.reader(file)
             for row in reader:
                 if row:  # Ensure row is not empty
-                    urls.append(row[0].strip())  # Read the first column 
-                                                 #(assuming it contains URLs)
+                    urls.append(row[0].strip())  
         logging.debug(f"Successfully loaded {len(urls)} URLs from {file_path}")
+    except FileNotFoundError:
+        logging.critical(f"CSV file not found: {file_path}")
     except Exception as e:
         logging.critical(f"Error reading CSV file {file_path}: {e}")
     return urls
 
 def clean_urls(url_list):
     """
-    Strip out the archival prefix before the close paranthesis.
-    :param url_list: a list of strings that are URLs
+    Remove archival prefix (e.g., timestamps or metadata) before the close parenthesis ')'.
+    
+    :param url_list: A list of raw URL strings.
+    :return: A set of cleaned URL paths.
     """
     cleaned_paths = set()
     for raw_path in url_list:
         try:
             if isinstance(raw_path, bytes):
-                raw_path = raw_path.decode('utf-8')
+                raw_path = raw_path.decode("utf-8")
+
             raw_path = raw_path.strip()
 
-            # Remove the subdomain prefix
             if ')' in raw_path:
-                path = raw_path.split(')', 1)[1]
-                cleaned_paths.add(path)
+                _, path = raw_path.split(')', 1)
             else:
                 path = raw_path
-                cleaned_paths.add(path)
+
+            cleaned_paths.add(path)
+        except (ValueError, UnicodeDecodeError) as e:
+            logging.warning(f"Skipping malformed URL entry: {raw_path} — {e}")
         except Exception as e:
-            logging.critical(f"Error cleaning URL {raw_path}: {e}") 
+            logging.critical(f"Unexpected error cleaning URL {raw_path}: {e}")
     
     return cleaned_paths
 
 def detect_urlkeys_from_subdomains(subdomains):
     """
-    Takes list of subdomains, pulls all archived page paths and sends them back. These
-    will be used to search for WARC files.
-    :param subdomains: a list of subdomains with one subdomain per row 
-                        to be used to find archived pages
+    Fetches URL keys from the Internet Archive's CDX API for a list of subdomains.
+
+    :param subdomains: List of subdomains (e.g., ["example.com", "blog.example.com"])
+    :return: Dictionary {subdomain: set of urlkeys}
     """
     urlkeys = {}
     for sdomain in subdomains:
