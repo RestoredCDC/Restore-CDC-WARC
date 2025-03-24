@@ -4,6 +4,7 @@ Utility functions for processing archived URLs from the Wayback Machine.
 
 import os
 import csv
+import json
 import logging
 
 import requests
@@ -35,11 +36,12 @@ def clean_urls(url_list):
     """
     Remove archival prefix (e.g., timestamps or metadata) before the close parenthesis ')'.
     
-    :param url_list: A list of raw URL strings.
+    :param url_list: A list of lists of URLs and timestamps
     :return: A list of cleaned URL paths.
     """
-    cleaned_paths = []
-    for raw_path in url_list:
+    url_timestamps = {}
+    for url_data in url_list:
+        (raw_path, timestamp) = url_data
         try:
             if isinstance(raw_path, bytes):
                 raw_path = raw_path.decode("utf-8")
@@ -49,14 +51,22 @@ def clean_urls(url_list):
             if ')' in raw_path:
                 _, path = raw_path.split(')', 1)
             else:
+                print(f"raw_path = {raw_path}")
                 path = raw_path
 
-            cleaned_paths.append(path)
+            if path not in url_timestamps:
+                url_timestamps[path] = timestamp
+                continue
+            if timestamp > url_timestamps[path]:
+                url_timestamps[path] = timestamp
         except (ValueError, UnicodeDecodeError) as e:
             logging.warning(f"Skipping malformed URL entry: {raw_path} — {e}")
         except Exception as e:
             logging.critical(f"Unexpected error cleaning URL {raw_path}: {e}")
     
+    cleaned_paths = []
+    for path, timestamp in url_timestamps.items():
+        cleaned_paths.append([ path, timestamp ])
     return cleaned_paths
 
 def detect_urlkeys_from_subdomains(state_folder, subdomains):
@@ -79,7 +89,7 @@ def detect_urlkeys_from_subdomains(state_folder, subdomains):
                 cleaned_data = []
                 for line in state_fd:
                     line = line.rstrip()
-                    cleaned_data.append(line)
+                    cleaned_data.append(line.split(" "))
                 urlkeys[netloc] = cleaned_data
                 state_fd.close()
             logging.info(f"Retrieved {len(urlkeys[netloc])} URLs for {netloc} from state file.")
@@ -94,21 +104,22 @@ def detect_urlkeys_from_subdomains(state_folder, subdomains):
             f"&from=20200101"
             f"&to=20250119"
             f"&filter=statuscode:200"
-            f"&collapse=urlkey"
-            f"&fl=urlkey"
+            f"&fl=urlkey,timestamp"
+            f"&output=json"
         )
 
         try:
             response = requests.get(cdx_call)
             if response.status_code == 200:
-                raw_data = response.text.splitlines()
-                cleaned_data = sorted(clean_urls(raw_data))
+                raw_data = json.loads(response.text)
+                raw_data = raw_data[1:]
+                cleaned_data = clean_urls(raw_data)
                 urlkeys[netloc] = cleaned_data
 
                 # Preserve the list in the appropriate state_file
                 with open(state_file, 'w', encoding='utf-8') as state_fd:
                     for url in cleaned_data:
-                        state_fd.write(f"{url}\n")
+                        state_fd.write(f"{url[0]} {url[1]}\n")
                     state_fd.close()
             else:
                 logging.error(f"Error retrieving urlkeys for subdomain: {netloc} — Status code: {response.status_code}")
