@@ -82,7 +82,7 @@ def main():
     url_list = detect_urlkeys_from_subdomains(selected_config['state_folder'], subdomains)
 
     logging.debug("Starting process_cdc_urls")
-    failed_urls = process_cdc_urls(
+    failed_urls, url_list_plus = process_cdc_urls(
         selected_config['state_folder'],
         selected_config['warc_folder'],
         selected_config['track_failed_urls'],
@@ -98,7 +98,7 @@ def main():
 
     logging.debug("Starting create_db")
     create_db(
-        selected_config['warc_folder'],
+        url_list_plus,
         selected_config['db_folder']
     )
     
