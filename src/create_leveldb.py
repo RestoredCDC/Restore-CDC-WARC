@@ -36,8 +36,13 @@ def create_db(loc, dbfolder):
                 uri = record.rec_headers.get_header('WARC-Target-URI')
                 payload = record.content_stream().read()
                 if uri and payload:
+                    content_type = record.http_headers.get_header('Content-Type')
                     content_db.put(uri.encode('utf-8'), payload)
-                    logging.info(f"Saved record: {uri}")
+                    
+                    if content_type:
+                        mimetype_db.put(uri.encode('utf-8'), content_type.encode('utf-8'))
+                        
+                    logging.info(f"Saved record: {uri} [{content_type}]")
 
         stream.close()
             

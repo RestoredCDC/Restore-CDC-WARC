@@ -183,7 +183,7 @@ def process_cdc_urls(state_folder, base_dir, track_failed_urls, failed_urls, sub
             fetched_state = {}
         for url_data in paths:
             (path, timestamp) = url_data
-            url = os.path.join(subdomain + path)
+            url = os.path.join(subdomain + path)  
             if path in fetched_state:
                 logging.info(f"Previous result for {path}: {fetched_state[path]}")
                 if fetched_state[path]['issues']:
@@ -196,7 +196,9 @@ def process_cdc_urls(state_folder, base_dir, track_failed_urls, failed_urls, sub
                 url.replace("/", "_") 
             )
             
-            warc_save_path = os.path.join(base_dir, warc_filename)
+            warc_save_path = os.path.join(base_dir, warc_filename)[:150]# need to truncate to avoid 
+                                                        # filename length errors
+                                                        # doesnt affect actual URL
             
             #logging.debug(f"$warc_save_path: {warc_save_path}")
             #logging.debug(f"$warc_filename: {warc_filename}")
