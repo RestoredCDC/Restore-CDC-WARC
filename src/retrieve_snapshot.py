@@ -1,102 +1,15 @@
 # Standard library imports
-import csv
 import json
 import logging
 import os
-import time
-from datetime import datetime
 
 # Third-party imports
-import requests
 import cdx_toolkit
 
-# Local application/library imports
-from constants import TARGET_DATE
-
-def get_with_retries(url, max_retries=5, delay=3, failed_urls=None, track_failures=True):
-    """
-    Handling requests with retries and timeouts
-    :param url: URL to try
-    :param max_retries: integer for maximum number of retries to attempt
-    :param delay: time in seconds for delay calculations
-    :param failed_urls: optional list to collect URLs that fail all attempts
-    :param track_failures: if True, append failed URL to list
-    :return: Response object or None
-    """
-    for attempt in range(max_retries):
-        try:
-            return requests.get(url, timeout=30)
-        except requests.exceptions.ReadTimeout as e:
-            logging.error(f"Attempt {attempt+1} timed out for URL {url}: {e}")
-            time.sleep(delay * (2 ** attempt))
-            continue
-        except requests.exceptions.ConnectionError as e:
-            logging.error(f"Attempt {attempt+1} connection failed for URL {url}: {e}")
-            time.sleep(delay * (2 ** attempt))
-            continue
-        except Exception as e:
-            logging.error(f"Unexpected error for URL {url} on attempt {attempt+1}: {e}")
-            continue
-    logging.warning(f"Skipping URL after {max_retries} failed attempts: {url}")
-    if failed_urls is not None and track_failures:
-        failed_urls.append(url)
-    return None
-
-
-def get_warc_url(cdx_url):
-    """
-    Query the CDX API to get the closest WARC file URL before or on the target date.
-    :param cdx_url: URL used to find archive for
-    :return none
-    """
-    # Format the CDX API URL for the query
-    cdx_api_url = (
-        f"https://web.archive.org/cdx/search/cdx?"
-        f"url={cdx_url}"
-        f"&output=json"
-        f"&fl=timestamp,original,warc_url"
-        f"&limit=-1"
-        f"&to=20250119"
-    )
-    # Send the request to the CDX API
-    response = get_with_retries(cdx_api_url)
-
-    if not response:
-        logging.error(
-            f"Failed to reach CDX API entirely."
-        )
-        return None
-
-    if response.status_code != 200:
-        logging.error(
-            f"Failed to query CDX API. HTTP status code: {response.status_code}"
-        )
-        return None
-
-    data = response.json()
-
-    # Filter snapshots that are on or before the target date
-    closest_snapshot = None
-    for entry in data[1:]:
-        timestamp = entry[0]
-        snapshot_date = datetime.strptime(timestamp, "%Y%m%d%H%M%S")
-        if snapshot_date <= TARGET_DATE:
-            closest_snapshot = entry
-        else:
-            break  # Since the data is sorted by date, no need to check further snapshots
-
-    if not closest_snapshot:
-        logging.error("No snapshots found before the target date.")
-        return None
-    # Extract the WARC URL and timestamp
-    warc_url = closest_snapshot[1]
-    timestamp = closest_snapshot[0]
-    logging.info(
-        f"Found closest snapshot: {warc_url} for timestamp {timestamp}"
-    )
-    return warc_url
-
-
+# The one thing slowing this down right now is the retry_info settings
+# in cdx_toolkit/myrequests.py which prescribe a minimum interval of 6
+# seconds between requests. A sensible interval, but it means several
+# subdomains are going to take quite some time to collect.
 def download_warc_cdx_toolkit(url, best_timestamp, warc_save_path):
     """
     Adapted from example: https://github.com/cocrawler/cdx_toolkit/blob/main/examples/iter-and-warc.py
@@ -121,44 +34,26 @@ def download_warc_cdx_toolkit(url, best_timestamp, warc_save_path):
         warc_save_path, "", warcinfo
     )
 
-    issues_seen = False
-    match_found = False
-
-    # TODO: Figure out how to call fetch_warc_record() directly
-    #       without the extra (redundant) /cdx/search/cdx ... API
-    #       call. It may involve fetching all the data
-    #       detect_urlkeys_from_subdomains() instead of just the url
-    #       and timestamp.
-    for obj in cdx.iter(url, limit=-20):
-        timestamp = obj["timestamp"]
-        if timestamp != best_timestamp:
-            logging.debug(f"Skipping because {timestamp} != {best_timestamp}")
-            continue
-        match_found = True
-        url = obj["url"]
-        status = obj["status"]
-        logging.info(
-            f"Considering extracting url: {url} with timestamp {timestamp}"
+    # Copying the 'wb' value that cdx_toolkit.CDXFetcher.__init__()
+    # sets for source="ia":
+    obj = cdx_toolkit.CaptureObject({
+        'timestamp': best_timestamp,
+        'url':       url,
+        'status':    '200'
+    }, wb='https://web.archive.org/web')
+    
+    try:
+        record = obj.fetch_warc_record()
+    except RuntimeError:
+        logging.debug(
+            "Skipping capture for RuntimeError 404: %s %s", url, best_timestamp
         )
-        if status != "200":
-            logging.debug("Skipping because status was {}, not 200".format(status))
-            issues_seen = True
-            continue
-        try:
-            record = obj.fetch_warc_record()
-        except RuntimeError:
-            logging.debug(
-                "Skipping capture for RuntimeError 404: %s %s", url, timestamp
-            )
-            issues_seen = True
-            continue
-        writer.write_record(record)
-        files.append(writer.filename)
-        logging.info(f"********SUCCESS!********** Wrote warc for {url}")
-        break
-    if not match_found:
-        issues_seen = True
-    return files, issues_seen
+        return [], True
+
+    writer.write_record(record)
+    files.append(writer.filename)
+    logging.info(f"********SUCCESS!********** Wrote warc for {url} at {writer.filename}")
+    return files, False
 
 def process_cdc_urls(state_folder, base_dir, track_failed_urls, failed_urls, subdomains):
     """
@@ -189,17 +84,17 @@ def process_cdc_urls(state_folder, base_dir, track_failed_urls, failed_urls, sub
                 if fetched_state[path]['issues']:
                     failed_urls.append(url)
                 continue
-            logging.info(f"========== Processing URL: {url} ==========")
+            logging.info(f"========== Processing URL: {url} [{timestamp}] ==========")
 
             # Define the prefix for saving the WARC segments
             warc_filename = (
                 url.replace("/", "_") 
             )
-            
+
             warc_save_path = os.path.join(base_dir, warc_filename)[:150]# need to truncate to avoid 
                                                         # filename length errors
                                                         # doesnt affect actual URL
-            
+
             #logging.debug(f"$warc_save_path: {warc_save_path}")
             #logging.debug(f"$warc_filename: {warc_filename}")
 
@@ -207,11 +102,11 @@ def process_cdc_urls(state_folder, base_dir, track_failed_urls, failed_urls, sub
             if os.path.exists(warc_save_path):
                 logging.debug(f"warc exists: {warc_save_path}")
                 continue
-                
+
             if url in failed_urls:
                 logging.warning(f"Skipping processing for failed URL: {url}")
                 continue
-                
+
             files, issues = download_warc_cdx_toolkit(url, timestamp, warc_save_path)
             fetched_state[path] = { "files": files, "issues": issues }
             if issues:
