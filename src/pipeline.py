@@ -78,23 +78,23 @@ def main():
 
     start_time = time()
 
-    #subdomains = read_urls_from_csv(selected_config['csv_file'])
-    #url_list = detect_urlkeys_from_subdomains(selected_config['state_folder'], subdomains)
+    subdomains = read_urls_from_csv(selected_config['csv_file'])
+    url_list = detect_urlkeys_from_subdomains(selected_config['state_folder'], subdomains)
 
     logging.debug("Starting process_cdc_urls")
-    #failed_urls = process_cdc_urls(
-    #    selected_config['state_folder'],
-    #    selected_config['warc_folder'],
-    #    selected_config['track_failed_urls'],
-    #    selected_config['failed_url_list'],
-    #    url_list
-    #)
+    failed_urls = process_cdc_urls(
+        selected_config['state_folder'],
+        selected_config['warc_folder'],
+        selected_config['track_failed_urls'],
+        selected_config['failed_url_list'],
+        url_list
+    )
 
-    #if selected_config.get("track_failed_urls") and len(failed_urls) > 0:
-    #    with open(selected_config["failed_url_list"], "w") as f:
-    #        for url in failed_urls:
-    #            f.write(url + "\n")
-    #    logging.info(f"Saved failed URLs to {selected_config['failed_url_list']}")
+    if selected_config.get("track_failed_urls") and len(failed_urls) > 0:
+        with open(selected_config["failed_url_list"], "w") as f:
+            for url in failed_urls:
+                f.write(url + "\n")
+        logging.info(f"Saved failed URLs to {selected_config['failed_url_list']}")
 
     logging.debug("Starting create_db")
     create_db(
