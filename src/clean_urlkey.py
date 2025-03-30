@@ -120,7 +120,7 @@ def detect_urlkeys_from_subdomains(state_folder, subdomains):
         url = f"{netloc}/"
 
         cdx_call = (
-            f"http://web.archive.org/cdx/search/cdx?"
+            f"https://web.archive.org/cdx/search/cdx?"
             f"url={url}"
             f"&matchType=prefix"
             f"&from=20200101"
@@ -133,9 +133,13 @@ def detect_urlkeys_from_subdomains(state_folder, subdomains):
             response = requests.get(cdx_call)
             if response.status_code == 200:
                 raw_data = json.loads(response.text)
-                raw_headers = raw_data[0]
-                raw_data = raw_data[1:]
-                cleaned_data = clean_urls(raw_headers, raw_data)
+                if len(raw_data) == 0:
+                    logging.error(f"No data found at all for {netloc}!")
+                    cleaned_data = []
+                else:
+                    raw_headers = raw_data[0]
+                    raw_data = raw_data[1:]
+                    cleaned_data = clean_urls(raw_headers, raw_data)
                 urlkeys[netloc] = cleaned_data
 
                 # Preserve the list in the appropriate state_file
