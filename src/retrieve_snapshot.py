@@ -17,11 +17,11 @@ def download_warc_cdx_toolkit(subdomain, url_data, warc_save_path):
     :param url: a URL to find WARC
     :param best_timestamp: a datetime used to find WARC
     :param warc_save_path: a path where the WARC will be saved
-    :return: A list of *.warc(.gz) files, and a flag indicating if we noticed any problems
+    :return: the .warc(.gz) file name, and a flag indicating if we noticed any problems
     """
     url = url_data['original']
     timestamp = url_data['timestamp']
-    files = []
+    warc_file = None
     logging.debug(f"Attempting to download warc for {url}")
     cdx = cdx_toolkit.CDXFetcher(source="ia")
     warcinfo = {
@@ -56,9 +56,9 @@ def download_warc_cdx_toolkit(subdomain, url_data, warc_save_path):
         return [], True
 
     writer.write_record(record)
-    files.append(writer.filename)
-    logging.info(f"********SUCCESS!********** Wrote warc for {url} at {writer.filename}")
-    return files, False
+    warc_file = writer.filename
+    logging.info(f"********SUCCESS!********** Wrote warc for {url} at {warc_file}")
+    return warc_file, False
 
 def process_cdc_urls(state_folder, base_dir, track_failed_urls, failed_urls, subdomains):
     """
@@ -108,8 +108,8 @@ def process_cdc_urls(state_folder, base_dir, track_failed_urls, failed_urls, sub
                                                         # filename length errors
                                                         # doesnt affect actual URL
 
-            files, issues = download_warc_cdx_toolkit(subdomain, url_data, warc_save_path)
-            fetched_state[path] = { "files": files, "issues": issues }
+            warc_file, issues = download_warc_cdx_toolkit(subdomain, url_data, warc_save_path)
+            fetched_state[path] = { "file": warc_file, "issues": issues }
             if issues:
                 failed_urls.append(url)
 

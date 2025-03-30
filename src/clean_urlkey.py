@@ -75,7 +75,6 @@ def clean_urls(url_headers, url_list):
                 url_collection[path] = url_data
             elif timestamp > url_timestamps[path]:
                 originals = url_collection[path][headers['originals']]
-                logging.debug(f"Repeat of {path} - {original} vs {originals}")
                 if not (original in originals):
                     originals.append(original)
                 url_data.append(originals)
