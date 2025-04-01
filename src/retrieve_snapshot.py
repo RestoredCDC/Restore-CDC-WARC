@@ -53,7 +53,7 @@ def download_warc_cdx_toolkit(subdomain, url_data, warc_save_path):
         record = obj.fetch_warc_record()
     except RuntimeError:
         logging.debug("Skipping capture for RuntimeError 404: %s %s", url, timestamp)
-        return [], True
+        return None, True
 
     writer.write_record(record)
     warc_file = writer.filename
