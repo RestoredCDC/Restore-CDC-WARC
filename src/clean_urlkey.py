@@ -32,16 +32,28 @@ def read_urls_from_csv(file_path):
         logging.critical(f"Error reading CSV file {file_path}: {e}")
     return urls
 
-def clean_urls(url_list):
+def clean_urls(url_headers, url_list):
     """
     Remove archival prefix (e.g., timestamps or metadata) before the close parenthesis ')'.
     
     :param url_list: A list of lists of URLs and timestamps
     :return: A list of cleaned URL paths.
     """
+    headers = {}
+    for ix, header in enumerate(url_headers):
+        headers[header] = ix
+
+    url_headers.append("path")
+    headers['path'] = len(url_headers) - 1
+
+    url_headers.append('originals')
+    headers['originals'] = len(url_headers) - 1
+
     url_timestamps = {}
+    url_collection = {}
     for url_data in url_list:
-        (raw_path, timestamp) = url_data
+        raw_path = url_data[headers["urlkey"]]
+        timestamp = url_data[headers["timestamp"]]
         try:
             if isinstance(raw_path, bytes):
                 raw_path = raw_path.decode("utf-8")
@@ -54,19 +66,28 @@ def clean_urls(url_list):
                 print(f"raw_path = {raw_path}")
                 path = raw_path
 
-            if path not in url_timestamps:
+            url_data.append(path)
+            original = url_data[headers['original']]
+            if not (path in url_timestamps):
+                # First time seeing this urlkey-path
+                url_data.append([ original ])
                 url_timestamps[path] = timestamp
-                continue
-            if timestamp > url_timestamps[path]:
+                url_collection[path] = url_data
+            elif timestamp > url_timestamps[path]:
+                originals = url_collection[path][headers['originals']]
+                if not (original in originals):
+                    originals.append(original)
+                url_data.append(originals)
                 url_timestamps[path] = timestamp
+                url_collection[path] = url_data
         except (ValueError, UnicodeDecodeError) as e:
             logging.warning(f"Skipping malformed URL entry: {raw_path} — {e}")
         except Exception as e:
             logging.critical(f"Unexpected error cleaning URL {raw_path}: {e}")
     
     cleaned_paths = []
-    for path, timestamp in url_timestamps.items():
-        cleaned_paths.append([ path, timestamp ])
+    for path, url_data in url_collection.items():
+        cleaned_paths.append(dict(zip(url_headers, url_collection[path])))
     return cleaned_paths
 
 def detect_urlkeys_from_subdomains(state_folder, subdomains):
@@ -89,7 +110,7 @@ def detect_urlkeys_from_subdomains(state_folder, subdomains):
                 cleaned_data = []
                 for line in state_fd:
                     line = line.rstrip()
-                    cleaned_data.append(line.split(" "))
+                    cleaned_data.append(json.loads(line))
                 urlkeys[netloc] = cleaned_data
                 state_fd.close()
             logging.info(f"Retrieved {len(urlkeys[netloc])} URLs for {netloc} from state file.")
@@ -98,13 +119,12 @@ def detect_urlkeys_from_subdomains(state_folder, subdomains):
         url = f"{netloc}/"
 
         cdx_call = (
-            f"http://web.archive.org/cdx/search/cdx?"
+            f"https://web.archive.org/cdx/search/cdx?"
             f"url={url}"
             f"&matchType=prefix"
             f"&from=20200101"
             f"&to=20250119"
             f"&filter=statuscode:200"
-            f"&fl=urlkey,timestamp"
             f"&output=json"
         )
 
@@ -112,14 +132,19 @@ def detect_urlkeys_from_subdomains(state_folder, subdomains):
             response = requests.get(cdx_call)
             if response.status_code == 200:
                 raw_data = json.loads(response.text)
-                raw_data = raw_data[1:]
-                cleaned_data = clean_urls(raw_data)
+                if len(raw_data) == 0:
+                    logging.error(f"No data found at all for {netloc}!")
+                    cleaned_data = []
+                else:
+                    raw_headers = raw_data[0]
+                    raw_data = raw_data[1:]
+                    cleaned_data = clean_urls(raw_headers, raw_data)
                 urlkeys[netloc] = cleaned_data
 
                 # Preserve the list in the appropriate state_file
                 with open(state_file, 'w', encoding='utf-8') as state_fd:
                     for url in cleaned_data:
-                        state_fd.write(f"{url[0]} {url[1]}\n")
+                        state_fd.write(json.dumps(url) + "\n")
                     state_fd.close()
             else:
                 logging.error(f"Error retrieving urlkeys for subdomain: {netloc} — Status code: {response.status_code}")
