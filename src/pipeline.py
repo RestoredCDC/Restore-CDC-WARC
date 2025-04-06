@@ -36,6 +36,7 @@ def main():
         help="Specify the run mode: 'dev' or 'prod'"
     )
     parser.add_argument("--debug", action="store_true", help="Enable debug logging")
+    parser.add_argument("--retry", action="store_true", help="Retry previously failed URLs")
     args = parser.parse_args()
 
     # Then set log level dynamically:
@@ -86,6 +87,7 @@ def main():
         selected_config['state_folder'],
         selected_config['warc_folder'],
         selected_config['track_failed_urls'],
+        args.retry,
         selected_config['failed_url_list'],
         url_list
     )
