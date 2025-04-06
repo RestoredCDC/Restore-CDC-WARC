@@ -32,6 +32,12 @@ urllib.parse.quote = customized_quote
 # Third-party imports
 import cdx_toolkit
 
+# The documented rate limit is 15 requests per minute, so in theory
+# this should keep us on track for that.
+#
+# https://archive.org/details/toomanyrequests_20191110
+cdx_toolkit.myrequests.retry_info['web.archive.org']['minimum_interval'] = 4.0
+
 # The one thing slowing this down right now is the retry_info settings
 # in cdx_toolkit/myrequests.py which prescribe a minimum interval of 6
 # seconds between requests. A sensible interval, but it means several
