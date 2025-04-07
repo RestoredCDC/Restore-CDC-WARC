@@ -13,8 +13,13 @@ import urllib.parse
 
 orig_quote = urllib.parse.quote
 
-# If there is a "?" in the URL, only quote what follows after it.
 def customized_quote(url):
+    """
+    If there is a "?" in the URL, only quote what follows after it.
+
+    :param url: a URL path
+    :return: the URL path, appropriately quoted for use with warc.py functions
+    """
     offset1 = url.find("?")
     if offset1 == -1:
         return url
@@ -91,7 +96,7 @@ def download_warc_cdx_toolkit(subdomain, url_data, warc_save_path):
     logging.info(f"********SUCCESS!********** Wrote warc for {url} at {warc_file}")
     return warc_file, False
 
-def process_cdc_urls(state_folder, base_dir, track_failed_urls, retry_failed_urls, failed_urls, subdomains):
+def process_cdc_urls(state_folder, base_dir, track_failed_urls, retry_failed_urls, failed_urls, subdomains, ldb):
     """
     Process a list of URLs, download the closest WARC snapshot, and extract resources.
     :param state_folder: Folder in which to track/cache the URLs we've already processed before
@@ -100,6 +105,7 @@ def process_cdc_urls(state_folder, base_dir, track_failed_urls, retry_failed_url
     :param retry_failed_urls: flag to indicate whether to retry previously failed URLs
     :param failed_urls: a file where failed URLs are logged
     :param subdomains: a nested list of subdomains and paths to use to find WARC archives
+    :param ldb: a WARCLevelDB instance; to give process_url() calls as we go
     :return: a list of failed URLs, plus an extended version of the subdomains structure
     """
 
@@ -130,6 +136,8 @@ def process_cdc_urls(state_folder, base_dir, track_failed_urls, retry_failed_url
                     url_data = copy.deepcopy(url_data)
                     url_data['fetched'] = fetched_state[path]
                     url_list_plus[subdomain].append(url_data)
+                    if ldb and not fetched_state[path]['issues'] and fetched_state[path]['file']:
+                        ldb.process_url(subdomain, url_data)
                     continue
 
             logging.info(f"========== Processing URL: {url} [{timestamp}] ==========")
@@ -150,9 +158,13 @@ def process_cdc_urls(state_folder, base_dir, track_failed_urls, retry_failed_url
 
             url_data = copy.deepcopy(url_data)
             url_data['fetched'] = fetched_state[path]
+            if ldb and not fetched_state[path]['issues'] and fetched_state[path]['file']:
+                ldb.process_url(subdomain, url_data)
+
             # Write intermediate state to disk, so we can pick it up
             # if we abort the process or it crashes
             with open(fetched_file, "w", encoding="utf-8") as fetched_fd:
                 json.dump(fetched_state, fetched_fd)
                 fetched_fd.close()
+
     return failed_urls, url_list_plus
