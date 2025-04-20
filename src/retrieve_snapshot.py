@@ -122,12 +122,13 @@ def process_cdc_urls(state_folder, base_dir, track_failed_urls, retry_failed_url
                 fetched_fd.close()
         else:
             fetched_state = {}
-        for url_data in paths:
+        total = len(paths)
+        for ix, url_data in enumerate(paths):
             path = url_data['path']
             timestamp = url_data['timestamp']
             url = os.path.join(subdomain + path)  
             if path in fetched_state:
-                logging.info(f"Previous result for {path}: {fetched_state[path]}")
+                logging.info(f"[{ix+1}/{total}] Previous result for {path}: {fetched_state[path]}")
                 if fetched_state[path]['issues'] and retry_failed_urls:
                     logging.info("Retrying this URL...")
                 else:
@@ -140,7 +141,7 @@ def process_cdc_urls(state_folder, base_dir, track_failed_urls, retry_failed_url
                         ldb.process_url(subdomain, url_data)
                     continue
 
-            logging.info(f"========== Processing URL: {url} [{timestamp}] ==========")
+            logging.info(f"[{ix+1}/{total}] ========== Processing URL: {url} [{timestamp}] ==========")
 
             # Define the prefix for saving the WARC segments
             warc_filename = (
