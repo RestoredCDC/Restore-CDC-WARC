@@ -9,7 +9,7 @@ from time import time
 from clean_urlkey import detect_urlkeys_from_subdomains, read_urls_from_csv
 from config_loader import load_config
 from retrieve_snapshot import process_cdc_urls
-from create_leveldb import create_db
+from create_leveldb import WARCLevelDB
 
 # Logging directory setup
 LOG_DIR = Path("../logs")
@@ -36,6 +36,7 @@ def main():
         help="Specify the run mode: 'dev' or 'prod'"
     )
     parser.add_argument("--debug", action="store_true", help="Enable debug logging")
+    parser.add_argument("--retry", action="store_true", help="Retry previously failed URLs")
     args = parser.parse_args()
 
     # Then set log level dynamically:
@@ -81,13 +82,18 @@ def main():
     subdomains = read_urls_from_csv(selected_config['csv_file'])
     url_list = detect_urlkeys_from_subdomains(selected_config['state_folder'], subdomains)
 
-    logging.debug("Starting process_cdc_urls")
+    logging.info("Starting create_db")
+    ldb = WARCLevelDB(selected_config['db_folder'])
+
+    logging.info("Starting process_cdc_urls")
     failed_urls, url_list_plus = process_cdc_urls(
         selected_config['state_folder'],
         selected_config['warc_folder'],
         selected_config['track_failed_urls'],
+        args.retry,
         selected_config['failed_url_list'],
-        url_list
+        url_list,
+        ldb
     )
 
     if selected_config.get("track_failed_urls") and len(failed_urls) > 0:
@@ -96,11 +102,8 @@ def main():
                 f.write(url + "\n")
         logging.info(f"Saved failed URLs to {selected_config['failed_url_list']}")
 
-    logging.debug("Starting create_db")
-    create_db(
-        url_list_plus,
-        selected_config['db_folder']
-    )
+    ldb.close()
+    logging.info(f"Inserted {ldb.total_path} paths into the LevelDB, for {ldb.total_url} URL variations")
     
     duration = time() - start_time
     logging.info(f"Script completed in {duration:.2f} seconds")
